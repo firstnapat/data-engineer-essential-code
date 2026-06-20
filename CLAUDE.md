@@ -19,7 +19,7 @@ cp .env.example .env            # fill in connection details for storage backend
 
 ```bash
 # Run any script directly (uv resolves the project environment)
-uv run 01_python_basics/01_variables.py
+uv run 01_python_basics/01_variables/01_variables.py
 uv run 02_working_with_data/02_data_analysis_process/04_eda.py
 
 # EDA workshop notebook
@@ -30,6 +30,10 @@ uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
 
 ```
 01_python_basics/              # Python fundamentals, runnable scripts
+  01_variables/                # variable assignment and naming
+  02_data_types/               # int, float, str, bool
+  03_operators/                # arithmetic, comparison, logical
+  04_input_output/             # print, input, formatting
   05_control_flow/             # if/else, for, while, list comprehension
   06_functions/                # definition, parameters, return values
   07_data_structures/          # list, tuple, dict, set

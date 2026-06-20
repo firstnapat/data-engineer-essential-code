@@ -30,7 +30,7 @@ cp .env.example .env            # fill in connection details for storage backend
 
 ```bash
 # Run any Python script
-uv run 01_python_basics/01_variables.py
+uv run 01_python_basics/01_variables/01_variables.py
 uv run 02_working_with_data/02_data_analysis_process/04_eda.py
 
 # Open the EDA workshop notebook
