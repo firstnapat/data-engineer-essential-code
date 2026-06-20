@@ -1,0 +1,55 @@
+date,product,category,quantity,unit_price,revenue,region
+2024-01-02,Laptop Pro,Electronics,3,35000,105000,Bangkok
+2024-01-02,Wireless Mouse,Electronics,15,650,9750,Bangkok
+2024-01-03,Standing Desk,Furniture,2,8500,17000,Chiang Mai
+2024-01-03,Ergonomic Chair,Furniture,4,15000,60000,Bangkok
+2024-01-04,Running Shoes,Clothing,10,2800,28000,Phuket
+2024-01-05,Monitor 27in,Electronics,5,12000,60000,Bangkok
+2024-01-07,Mechanical Keyboard,Electronics,8,2500,20000,Chiang Mai
+2024-01-08,Water Bottle,Accessories,25,450,11250,Khon Kaen
+2024-01-10,Laptop Pro,Electronics,2,35000,70000,Phuket
+2024-01-11,Sports Shirt,Clothing,30,890,26700,Bangkok
+2024-01-12,Bookshelf,Furniture,6,3200,19200,Ayutthaya
+2024-01-14,Webcam,Electronics,12,3500,42000,Bangkok
+2024-01-15,Notebook,Accessories,50,120,6000,Chiang Mai
+2024-01-17,Monitor 27in,Electronics,3,12000,36000,Khon Kaen
+2024-01-18,Ergonomic Chair,Furniture,2,15000,30000,Phuket
+2024-01-20,Pen Set,Accessories,40,280,11200,Bangkok
+2024-01-21,Mechanical Keyboard,Electronics,5,2500,12500,Bangkok
+2024-01-22,Standing Desk,Furniture,1,8500,8500,Khon Kaen
+2024-01-24,Running Shoes,Clothing,15,2800,42000,Chiang Mai
+2024-01-25,Laptop Pro,Electronics,4,35000,140000,Bangkok
+2024-01-28,Wireless Mouse,Electronics,20,650,13000,Ayutthaya
+2024-01-30,Water Bottle,Accessories,30,450,13500,Phuket
+2024-02-01,Sports Shirt,Clothing,25,890,22250,Bangkok
+2024-02-03,Monitor 27in,Electronics,7,12000,84000,Bangkok
+2024-02-05,Bookshelf,Furniture,4,3200,12800,Chiang Mai
+2024-02-07,Webcam,Electronics,8,3500,28000,Khon Kaen
+2024-02-08,Ergonomic Chair,Furniture,3,15000,45000,Bangkok
+2024-02-10,Laptop Pro,Electronics,2,35000,70000,Phuket
+2024-02-12,Pen Set,Accessories,35,280,9800,Bangkok
+2024-02-14,Mechanical Keyboard,Electronics,10,2500,25000,Bangkok
+2024-02-15,Running Shoes,Clothing,20,2800,56000,Phuket
+2024-02-17,Wireless Mouse,Electronics,25,650,16250,Chiang Mai
+2024-02-19,Standing Desk,Furniture,3,8500,25500,Bangkok
+2024-02-21,Notebook,Accessories,60,120,7200,Ayutthaya
+2024-02-22,Sports Shirt,Clothing,40,890,35600,Khon Kaen
+2024-02-24,Monitor 27in,Electronics,4,12000,48000,Chiang Mai
+2024-02-26,Water Bottle,Accessories,20,450,9000,Bangkok
+2024-02-28,Laptop Pro,Electronics,3,35000,105000,Bangkok
+2024-03-01,Webcam,Electronics,15,3500,52500,Phuket
+2024-03-03,Ergonomic Chair,Furniture,5,15000,75000,Bangkok
+2024-03-05,Bookshelf,Furniture,8,3200,25600,Chiang Mai
+2024-03-07,Mechanical Keyboard,Electronics,12,2500,30000,Bangkok
+2024-03-09,Running Shoes,Clothing,18,2800,50400,Bangkok
+2024-03-11,Pen Set,Accessories,45,280,12600,Khon Kaen
+2024-03-13,Laptop Pro,Electronics,5,35000,175000,Bangkok
+2024-03-15,Standing Desk,Furniture,4,8500,34000,Phuket
+2024-03-17,Wireless Mouse,Electronics,30,650,19500,Bangkok
+2024-03-19,Sports Shirt,Clothing,35,890,31150,Chiang Mai
+2024-03-21,Monitor 27in,Electronics,6,12000,72000,Bangkok
+2024-03-23,Notebook,Accessories,80,120,9600,Ayutthaya
+2024-03-25,Water Bottle,Accessories,40,450,18000,Phuket
+2024-03-27,Webcam,Electronics,10,3500,35000,Khon Kaen
+2024-03-28,Laptop Pro,Electronics,4,35000,140000,Chiang Mai
+2024-03-30,Ergonomic Chair,Furniture,6,15000,90000,Bangkok

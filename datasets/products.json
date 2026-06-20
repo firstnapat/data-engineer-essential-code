@@ -1,0 +1,19 @@
+{
+  "store": "TechData Store",
+  "last_updated": "2024-01-01",
+  "products": [
+    {"id": "P001", "name": "Laptop Pro", "category": "Electronics", "unit_price": 35000, "stock": 50, "supplier": "TechCorp"},
+    {"id": "P002", "name": "Wireless Mouse", "category": "Electronics", "unit_price": 650, "stock": 200, "supplier": "PeripheralCo"},
+    {"id": "P003", "name": "Mechanical Keyboard", "category": "Electronics", "unit_price": 2500, "stock": 80, "supplier": "PeripheralCo"},
+    {"id": "P004", "name": "Monitor 27in", "category": "Electronics", "unit_price": 12000, "stock": 30, "supplier": "DisplayTech"},
+    {"id": "P005", "name": "Webcam", "category": "Electronics", "unit_price": 3500, "stock": 60, "supplier": "TechCorp"},
+    {"id": "P006", "name": "Standing Desk", "category": "Furniture", "unit_price": 8500, "stock": 25, "supplier": "FurniturePro"},
+    {"id": "P007", "name": "Ergonomic Chair", "category": "Furniture", "unit_price": 15000, "stock": 40, "supplier": "FurniturePro"},
+    {"id": "P008", "name": "Bookshelf", "category": "Furniture", "unit_price": 3200, "stock": 35, "supplier": "FurniturePro"},
+    {"id": "P009", "name": "Running Shoes", "category": "Clothing", "unit_price": 2800, "stock": 100, "supplier": "SportWear"},
+    {"id": "P010", "name": "Sports Shirt", "category": "Clothing", "unit_price": 890, "stock": 150, "supplier": "SportWear"},
+    {"id": "P011", "name": "Water Bottle", "category": "Accessories", "unit_price": 450, "stock": 300, "supplier": "HealthGear"},
+    {"id": "P012", "name": "Notebook", "category": "Accessories", "unit_price": 120, "stock": 500, "supplier": "OfficePro"},
+    {"id": "P013", "name": "Pen Set", "category": "Accessories", "unit_price": 280, "stock": 400, "supplier": "OfficePro"}
+  ]
+}
