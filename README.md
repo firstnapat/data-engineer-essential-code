@@ -13,10 +13,10 @@ Structured learning path covering Python fundamentals through data engineering w
 
 ## Setup
 
+Uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
 ```bash
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+uv sync                         # create .venv and install dependencies
 cp .env.example .env            # fill in connection details
 ```
 
@@ -24,10 +24,10 @@ cp .env.example .env            # fill in connection details
 
 ```bash
 # Run any Python script
-python 01_python_basics/01_variables.py
+uv run 01_python_basics/01_variables.py
 
 # Open EDA workshop notebook
-jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
+uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
 ```
 
 ## Dataset

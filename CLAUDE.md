@@ -8,22 +8,22 @@ Structured learning codebase for a Data Engineer Essentials course. Each module 
 
 ## Setup
 
+Dependencies are managed with [uv](https://docs.astral.sh/uv/) (`pyproject.toml` + `uv.lock`).
+
 ```bash
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+uv sync                         # create .venv and install dependencies
 cp .env.example .env            # fill in connection details for storage backends
 ```
 
 ## Running Code
 
 ```bash
-# Run any script directly
-python 01_python_basics/01_variables.py
-python 02_working_with_data/02_data_analysis_process/04_eda.py
+# Run any script directly (uv resolves the project environment)
+uv run 01_python_basics/01_variables.py
+uv run 02_working_with_data/02_data_analysis_process/04_eda.py
 
 # EDA workshop notebook
-jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
+uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
 ```
 
 ## Module Structure
