@@ -38,11 +38,15 @@ uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
   06_functions/                # definition, parameters, return values
   07_data_structures/          # list, tuple, dict, set
   08_error_handling/           # try/except, common errors
+  09_string_manipulation/      # case, split/join, replace, search, formatting
+  10_modules/                  # creating/importing your own module (sales_utils.py)
 
 02_working_with_data/
   01_file_handling/            # read txt/csv/json with stdlib (no pandas)
   02_data_analysis_process/    # 4-step EDA methodology as scripts
-  03_pandas/                   # pandas basics + workshop_eda.ipynb
+  03_pandas/                   # pandas basics, Series, merge/join + workshop_eda.ipynb
+  04_numpy/                    # arrays, vectorization, broadcasting, aggregations
+  05_visualization/            # matplotlib + seaborn charts (saved to /tmp/viz/)
 
 03_data_ingestion/
   01_files/                    # ingest_csv.py, ingest_json.py (extract→validate→transform→load)

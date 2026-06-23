@@ -1,9 +1,11 @@
+# basic while loop
 print("--- Basic While ---")
 count = 0
 while count < 5:
     print(f"  count = {count}")
     count += 1
 
+# while True + break
 print("\n--- While with break ---")
 number = 1
 while True:
@@ -13,6 +15,7 @@ while True:
         break
 print()
 
+# while + continue
 print("\n--- While with continue ---")
 i = 0
 while i < 10:
@@ -22,6 +25,7 @@ while i < 10:
     print(i, end=" ")
 print()
 
+# retry pattern (common in data engineering)
 print("\n--- Retry Pattern ---")
 max_retries = 3
 attempt = 0
@@ -36,6 +40,7 @@ while attempt < max_retries:
 
 print("Succeeded!" if success else "Max retries reached.")
 
+# loop until a sentinel value
 print("\n--- Collecting Until Sentinel Value (simulated) ---")
 inputs = ["10", "20", "stop", "30"]
 total = 0

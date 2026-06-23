@@ -1,3 +1,4 @@
+# if / elif / else
 print("--- If / Elif / Else ---")
 score = 75
 
@@ -14,11 +15,13 @@ else:
 
 print(f"Score: {score} -> Grade: {grade}")
 
+# ternary (conditional expression)
 print("\n--- Ternary (one-liner) ---")
 age = 20
 status = "adult" if age >= 18 else "minor"
 print(f"Age {age} is: {status}")
 
+# nested if
 print("\n--- Nested If ---")
 temperature = 28
 humidity = 80
@@ -32,6 +35,7 @@ else:
 
 print(f"{temperature}°C, {humidity}% humidity -> {weather}")
 
+# combining conditions with and / or
 print("\n--- and / or in conditions ---")
 username, password = "admin", "secret123"
 if username == "admin" and password == "secret123":
@@ -39,6 +43,7 @@ if username == "admin" and password == "secret123":
 else:
     print("Invalid credentials.")
 
+# truthy / falsy in conditions
 print("\n--- Truthy / Falsy ---")
 values = [0, 1, "", "hello", None, [], [1], {}, {"a": 1}]
 for val in values:

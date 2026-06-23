@@ -1,3 +1,4 @@
+# creating sets — duplicates removed automatically
 print("--- Creating Sets ---")
 s = {1, 2, 3, 4, 5}
 with_dupes = {1, 2, 2, 3, 3, 3}    # duplicates removed automatically
@@ -7,12 +8,14 @@ print(f"set: {s}")
 print(f"with_dupes -> {with_dupes}")
 print(f"from_list  -> {from_list}")
 
+# adding / removing — add, discard, remove
 print("\n--- Adding / Removing ---")
 s = {1, 2, 3}
 s.add(4);       print(f"add(4):     {s}")
 s.discard(2);   print(f"discard(2): {s}  (no error if missing)")
 s.remove(3);    print(f"remove(3):  {s}")
 
+# set operations — union, intersection, difference
 print("\n--- Set Operations ---")
 a = {1, 2, 3, 4, 5}
 b = {3, 4, 5, 6, 7}
@@ -23,6 +26,7 @@ print(f"intersect  a & b: {a & b}")
 print(f"difference a - b: {a - b}")
 print(f"symmetric  a ^ b: {a ^ b}")
 
+# subset / superset / disjoint
 print("\n--- Subset / Superset ---")
 c = {1, 2, 3}
 d = {1, 2, 3, 4, 5}
@@ -30,6 +34,7 @@ print(f"c.issubset(d):    {c.issubset(d)}")
 print(f"d.issuperset(c):  {d.issuperset(c)}")
 print(f"c.isdisjoint({{6,7}}): {c.isdisjoint({6, 7})}")
 
+# use case: remove duplicates from a list
 print("\n--- Common Use Case: Remove Duplicates ---")
 original = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
 unique_unordered = list(set(original))
@@ -38,6 +43,7 @@ print(f"original:          {original}")
 print(f"unique (unordered):{unique_unordered}")
 print(f"unique (ordered):  {unique_ordered}")
 
+# use case: fast membership testing
 print("\n--- Fast Membership Testing ---")
 valid_categories = {"Electronics", "Furniture", "Clothing", "Accessories"}
 test_values = ["Laptop", "Electronics", "Chair", "Clothing"]
