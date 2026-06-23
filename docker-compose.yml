@@ -1,0 +1,77 @@
+# External storage backends for the 04_data_storage modules.
+#
+#   docker compose up -d        # start Postgres + ClickHouse + RustFS
+#   docker compose ps           # check status / health
+#   docker compose down         # stop (keeps data volumes)
+#   docker compose down -v      # stop and wipe data
+#
+# All credentials and host ports are read from .env (see .env.example).
+# The Python examples run on the host via `uv run` and connect to these
+# services over localhost using the same .env values.
+#
+# NOTE: ClickHouse's native port and RustFS's S3 port are both 9000 by
+# default and cannot share host port 9000. We keep RustFS on 9000 (matches
+# S3_ENDPOINT_URL) and expose ClickHouse native on CLICKHOUSE_PORT (9009).
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: de-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mydb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    container_name: de-clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-default}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+      # Allow the default user to connect with an empty password (matches .env)
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "${CLICKHOUSE_PORT:-9009}:9000"   # native protocol (clickhouse-driver)
+      - "8123:8123"                       # HTTP interface (browser / curl)
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: de-rustfs
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-minioadmin}
+      RUSTFS_CONSOLE_ENABLE: "true"
+    ports:
+      - "9000:9000"   # S3 API (matches S3_ENDPOINT_URL)
+      - "9001:9001"   # web console
+    volumes:
+      - rustfs-data:/data
+
+volumes:
+  postgres-data:
+  clickhouse-data:
+  rustfs-data:
