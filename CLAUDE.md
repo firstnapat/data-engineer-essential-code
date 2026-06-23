@@ -20,10 +20,10 @@ cp .env.example .env            # fill in connection details for storage backend
 ```bash
 # Run any script directly (uv resolves the project environment)
 uv run 01_python_basics/01_variables/01_variables.py
-uv run 02_working_with_data/02_data_analysis_process/04_eda.py
+uv run 03_data_ingestion/01_files/ingest_xml.py
 
-# EDA workshop notebook
-uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
+# pandas notebook (module 02 is notebook-based)
+uv run jupyter notebook 02_working_with_data/01_pandas/01_pandas.ipynb
 ```
 
 ## Module Structure
@@ -41,15 +41,17 @@ uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
   09_string_manipulation/      # case, split/join, replace, search, formatting
   10_modules/                  # creating/importing your own module (sales_utils.py)
 
-02_working_with_data/
-  01_file_handling/            # read txt/csv/json with stdlib (no pandas)
-  02_data_analysis_process/    # 4-step EDA methodology as scripts
-  03_pandas/                   # pandas basics, Series, merge/join + workshop_eda.ipynb
-  04_numpy/                    # arrays, vectorization, broadcasting, aggregations
-  05_visualization/            # matplotlib + seaborn charts (saved to /tmp/viz/)
+02_working_with_data/         # data manipulation with pandas
+  00_setup/                    # 00_setup.py — verify env, jupyter + pandas conventions
+  01_pandas/                   # 01_pandas.ipynb — single notebook, 9 sections (intro,
+                               #   Series, DataFrame, read/write, select, stats,
+                               #   manipulation, cleaning, merge/join/concat)
+  02_assignment/               # pandas_practice_project.ipynb + workshop_eda.ipynb
+                               #   (EDA workshop runs on datasets/products.json)
 
 03_data_ingestion/
-  01_files/                    # ingest_csv.py, ingest_json.py (extract→validate→transform→load)
+  01_files/                    # ingest handlers per format: text, csv, json, xml,
+                               #   parquet, avro (extract→validate→transform→load)
   02_apis/                     # ingest_api.py (Open-Meteo weather, no auth required)
   03_database/                 # ingest_db.py (SQLite demo, SQLAlchemy pattern)
 
@@ -62,7 +64,8 @@ uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
 datasets/
   sales.csv                    # 54 rows: date, product, category, quantity, unit_price, revenue, region
   products.json                # 13-product catalog with nested structure
-  sample.txt                   # plain text for file handling exercises
+  products.xml                 # same 13-product catalog in XML (for ingest_xml.py)
+  sample.txt                   # plain text report (for ingest_text.py)
 ```
 
 ## Architecture Patterns
@@ -71,9 +74,11 @@ datasets/
 
 **Storage scripts** (`04_data_storage/`) require external services (ClickHouse, RustFS/MinIO, or just local disk for Delta). Storage backends that need Docker are called out in the module docstring with the `docker run` command.
 
-**File handling** (`02_working_with_data/01_file_handling/`) intentionally uses stdlib (`csv`, `json`) — no pandas — to teach the fundamentals before introducing the abstraction.
+**File ingestion** (`03_data_ingestion/01_files/`) has one handler per format (text, csv, json, xml, parquet, avro). Each defines functions to read/parse the format into a pandas DataFrame; parquet/avro also demonstrate writing. Requires `pyarrow` (parquet), `fastavro` (avro), and `lxml` (xml via `pandas.read_xml`).
 
-**Datasets path convention:** scripts use `os.path.join(os.path.dirname(__file__), "../../datasets")` to resolve `datasets/` relative to the script location.
+**Module 02 is notebook-based:** pandas is taught in a single executable notebook (`01_pandas/01_pandas.ipynb`). Since notebooks have no `__file__`, it resolves `datasets/` by searching upward (`.`, `..`, `../..`) so it runs whether Jupyter is launched from the repo root or the notebook's folder.
+
+**Datasets path convention:** plain `.py` scripts use `os.path.join(os.path.dirname(__file__), "../../datasets")` to resolve `datasets/` relative to the script location.
 
 ## External Services
 
