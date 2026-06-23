@@ -1,29 +1,32 @@
-# basic variables — assignment and the 5 core types
-name = "Alice"
-age = 25
-height = 1.65
-is_student = True
-nothing = None
+# basic variables — assignment and the 5 core types, told through one product
+product_name = "Laptop Pro"      # str
+unit_price = 35000.0             # float
+stock = 50                       # int
+is_active = True                 # bool
+discount = None                  # None — "no value yet"
 
-print("--- Basic Variables ---")
-print(f"Name: {name}, Age: {age}, Height: {height}")
-print(f"Is student: {is_student}, Nothing: {nothing}")
-print(f"type(name): {type(name)}, type(age): {type(age)}")
+print("--- Product Variables ---")
+print(f"Product: {product_name}, Price: {unit_price}, Stock: {stock}")
+print(f"Active: {is_active}, Discount: {discount}")
+print(f"type(product_name): {type(product_name)}, type(stock): {type(stock)}")
 
-# multiple assignment and swap
+# multiple assignment — unpack a product row in one line
 print("\n--- Multiple Assignment ---")
-x, y, z = 10, 20, 30
-print(f"x={x}, y={y}, z={z}")
+sku, category, supplier = "P001", "Electronics", "TechCorp"
+print(f"sku={sku}, category={category}, supplier={supplier}")
 
-x, y = y, x  # swap without temp variable
-print(f"After swap: x={x}, y={y}")
+# swap two values without a temp variable (e.g. reorder display columns)
+low_price, high_price = 650, 35000
+low_price, high_price = high_price, low_price
+print(f"After swap: low_price={low_price}, high_price={high_price}")
 
-a = b = c = 0
-print(f"a={a}, b={b}, c={c}")
+# same starting value for several counters
+units_sold = units_returned = units_damaged = 0
+print(f"sold={units_sold}, returned={units_returned}, damaged={units_damaged}")
 
 # naming conventions
 print("\n--- Naming Conventions ---")
-user_name = "snake_case"  # preferred in Python
-MAX_CONNECTIONS = 100  # constants in UPPER_SNAKE_CASE
-_internal = "prefix _ = internal"
-print(user_name, MAX_CONNECTIONS, _internal)
+customer_name = "snake_case for variables"   # preferred in Python
+MAX_STOCK_PER_SKU = 1000                      # constants in UPPER_SNAKE_CASE
+_internal_cache = "prefix _ = internal use"
+print(customer_name, MAX_STOCK_PER_SKU, _internal_cache)

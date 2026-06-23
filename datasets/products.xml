@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog store="TechData Store" last_updated="2024-01-01">
+  <product>
+    <id>P001</id>
+    <name>Laptop Pro</name>
+    <category>Electronics</category>
+    <unit_price>35000</unit_price>
+    <stock>50</stock>
+    <supplier>TechCorp</supplier>
+  </product>
+  <product>
+    <id>P002</id>
+    <name>Wireless Mouse</name>
+    <category>Electronics</category>
+    <unit_price>650</unit_price>
+    <stock>200</stock>
+    <supplier>PeripheralCo</supplier>
+  </product>
+  <product>
+    <id>P003</id>
+    <name>Mechanical Keyboard</name>
+    <category>Electronics</category>
+    <unit_price>2500</unit_price>
+    <stock>80</stock>
+    <supplier>PeripheralCo</supplier>
+  </product>
+  <product>
+    <id>P004</id>
+    <name>Monitor 27in</name>
+    <category>Electronics</category>
+    <unit_price>12000</unit_price>
+    <stock>30</stock>
+    <supplier>DisplayTech</supplier>
+  </product>
+  <product>
+    <id>P005</id>
+    <name>Webcam</name>
+    <category>Electronics</category>
+    <unit_price>3500</unit_price>
+    <stock>60</stock>
+    <supplier>TechCorp</supplier>
+  </product>
+  <product>
+    <id>P006</id>
+    <name>Standing Desk</name>
+    <category>Furniture</category>
+    <unit_price>8500</unit_price>
+    <stock>25</stock>
+    <supplier>FurniturePro</supplier>
+  </product>
+  <product>
+    <id>P007</id>
+    <name>Ergonomic Chair</name>
+    <category>Furniture</category>
+    <unit_price>15000</unit_price>
+    <stock>40</stock>
+    <supplier>FurniturePro</supplier>
+  </product>
+  <product>
+    <id>P008</id>
+    <name>Bookshelf</name>
+    <category>Furniture</category>
+    <unit_price>3200</unit_price>
+    <stock>35</stock>
+    <supplier>FurniturePro</supplier>
+  </product>
+  <product>
+    <id>P009</id>
+    <name>Running Shoes</name>
+    <category>Clothing</category>
+    <unit_price>2800</unit_price>
+    <stock>100</stock>
+    <supplier>SportWear</supplier>
+  </product>
+  <product>
+    <id>P010</id>
+    <name>Sports Shirt</name>
+    <category>Clothing</category>
+    <unit_price>890</unit_price>
+    <stock>150</stock>
+    <supplier>SportWear</supplier>
+  </product>
+  <product>
+    <id>P011</id>
+    <name>Water Bottle</name>
+    <category>Accessories</category>
+    <unit_price>450</unit_price>
+    <stock>300</stock>
+    <supplier>HealthGear</supplier>
+  </product>
+  <product>
+    <id>P012</id>
+    <name>Notebook</name>
+    <category>Accessories</category>
+    <unit_price>120</unit_price>
+    <stock>500</stock>
+    <supplier>OfficePro</supplier>
+  </product>
+  <product>
+    <id>P013</id>
+    <name>Pen Set</name>
+    <category>Accessories</category>
+    <unit_price>280</unit_price>
+    <stock>400</stock>
+    <supplier>OfficePro</supplier>
+  </product>
+</catalog>

@@ -1,51 +1,51 @@
-# creating dictionaries
+# creating dictionaries — a product record
 print("--- Creating Dictionaries ---")
-person = {"name": "Alice", "age": 25, "city": "Bangkok"}
-config = dict(host="localhost", port=5432, db="mydb")
-print(f"person: {person}")
-print(f"config: {config}")
+product = {"sku": "P001", "name": "Laptop Pro", "price": 35000, "stock": 50}
+config = dict(host="localhost", port=5432, db="warehouse")
+print(f"product: {product}")
+print(f"config:  {config}")
 
 # accessing values — [], .get(), default
 print("\n--- Accessing Values ---")
-print(f"person['name']:                {person['name']}")
-print(f"person.get('age'):             {person.get('age')}")
-print(f"person.get('email', 'N/A'):    {person.get('email', 'N/A')}")
+print(f"product['name']:                {product['name']}")
+print(f"product.get('stock'):           {product.get('stock')}")
+print(f"product.get('supplier', 'N/A'): {product.get('supplier', 'N/A')}")
 
 try:
-    _ = person["email"]
+    _ = product["supplier"]
 except KeyError as e:
     print(f"KeyError for missing key: {e}")
 
 # modifying — add, update, pop
 print("\n--- Modifying ---")
-d = {"a": 1, "b": 2}
-d["c"] = 3;               print(f"add 'c':       {d}")
-d["a"] = 99;              print(f"update 'a':    {d}")
-deleted = d.pop("b");     print(f"pop('b'):      {d}  deleted={deleted}")
-d.update({"x": 10, "y": 20}); print(f"update dict:   {d}")
+order = {"order_id": 1001, "sku": "P001"}
+order["quantity"] = 3;           print(f"add quantity:  {order}")
+order["sku"] = "P002";           print(f"change sku:    {order}")
+removed = order.pop("quantity"); print(f"pop quantity:  {order}  removed={removed}")
+order.update({"status": "paid", "region": "Bangkok"}); print(f"update:        {order}")
 
 # keys / values / items
 print("\n--- Keys / Values / Items ---")
-product = {"name": "Laptop", "price": 35000, "stock": 50}
 print(f"keys():   {list(product.keys())}")
 print(f"values(): {list(product.values())}")
 for key, value in product.items():
     print(f"  {key}: {value}")
 
-# nested dictionary
+# nested dictionary — customers keyed by ID
 print("\n--- Nested Dictionary ---")
-employees = {
-    "E001": {"name": "Alice", "dept": "Engineering", "salary": 60000},
-    "E002": {"name": "Bob",   "dept": "Data",        "salary": 55000},
+customers = {
+    "U001": {"name": "Alice", "city": "Bangkok",    "tier": "gold"},
+    "U002": {"name": "Bob",   "city": "Chiang Mai", "tier": "silver"},
 }
-for emp_id, info in employees.items():
-    print(f"  {emp_id}: {info['name']} ({info['dept']})")
+for user_id, info in customers.items():
+    print(f"  {user_id}: {info['name']} ({info['tier']}, {info['city']})")
 
-# defaultdict — auto default value for missing keys
+# defaultdict — total revenue per category without pre-seeding keys
 print("\n--- defaultdict ---")
 from collections import defaultdict
 
-word_count = defaultdict(int)
-for word in ["apple", "banana", "apple", "cherry", "apple"]:
-    word_count[word] += 1
-print(f"word_count: {dict(word_count)}")
+revenue_by_category = defaultdict(float)
+rows = [("Electronics", 105000), ("Furniture", 17000), ("Electronics", 9750), ("Clothing", 2800)]
+for category, amount in rows:
+    revenue_by_category[category] += amount
+print(f"revenue_by_category: {dict(revenue_by_category)}")

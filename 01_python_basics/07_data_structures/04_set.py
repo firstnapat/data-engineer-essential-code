@@ -1,52 +1,50 @@
 # creating sets — duplicates removed automatically
 print("--- Creating Sets ---")
-s = {1, 2, 3, 4, 5}
-with_dupes = {1, 2, 2, 3, 3, 3}    # duplicates removed automatically
-from_list = set([1, 1, 2, 2, 3])
-empty = set()                        # {} creates a dict, not a set!
-print(f"set: {s}")
-print(f"with_dupes -> {with_dupes}")
-print(f"from_list  -> {from_list}")
+skus_today = {"P001", "P002", "P002", "P006"}    # duplicates removed automatically
+from_list = set(["P001", "P001", "P002"])
+empty = set()                                      # {} makes a dict, not a set!
+print(f"skus_today: {skus_today}")
+print(f"from_list:  {from_list}")
 
 # adding / removing — add, discard, remove
 print("\n--- Adding / Removing ---")
-s = {1, 2, 3}
-s.add(4);       print(f"add(4):     {s}")
-s.discard(2);   print(f"discard(2): {s}  (no error if missing)")
-s.remove(3);    print(f"remove(3):  {s}")
+cart = {"P001", "P002", "P006"}
+cart.add("P009");      print(f"add:     {cart}")
+cart.discard("P002");  print(f"discard: {cart}  (no error if missing)")
+cart.remove("P006");   print(f"remove:  {cart}")
 
-# set operations — union, intersection, difference
+# set operations — compare what sold today vs yesterday
 print("\n--- Set Operations ---")
-a = {1, 2, 3, 4, 5}
-b = {3, 4, 5, 6, 7}
-print(f"a:                {a}")
-print(f"b:                {b}")
-print(f"union      a | b: {a | b}")
-print(f"intersect  a & b: {a & b}")
-print(f"difference a - b: {a - b}")
-print(f"symmetric  a ^ b: {a ^ b}")
+today = {"P001", "P002", "P006", "P009"}
+yesterday = {"P006", "P009", "P011", "P012"}
+print(f"today:            {today}")
+print(f"yesterday:        {yesterday}")
+print(f"either day  | :   {today | yesterday}")
+print(f"both days   & :   {today & yesterday}")
+print(f"only today  - :   {today - yesterday}")
+print(f"one day only ^:   {today ^ yesterday}")
 
 # subset / superset / disjoint
 print("\n--- Subset / Superset ---")
-c = {1, 2, 3}
-d = {1, 2, 3, 4, 5}
-print(f"c.issubset(d):    {c.issubset(d)}")
-print(f"d.issuperset(c):  {d.issuperset(c)}")
-print(f"c.isdisjoint({{6,7}}): {c.isdisjoint({6, 7})}")
+ordered = {"P001", "P002"}
+catalog = {"P001", "P002", "P006", "P009"}
+print(f"ordered.issubset(catalog):    {ordered.issubset(catalog)}")
+print(f"catalog.issuperset(ordered):  {catalog.issuperset(ordered)}")
+print(f"ordered.isdisjoint({{'P099'}}): {ordered.isdisjoint({'P099'})}")
 
-# use case: remove duplicates from a list
+# use case: distinct values from a column of order rows
 print("\n--- Common Use Case: Remove Duplicates ---")
-original = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
-unique_unordered = list(set(original))
-unique_ordered = list(dict.fromkeys(original))   # preserves insertion order
-print(f"original:          {original}")
-print(f"unique (unordered):{unique_unordered}")
-print(f"unique (ordered):  {unique_ordered}")
+region_column = ["Bangkok", "Chiang Mai", "Bangkok", "Phuket", "Bangkok", "Chiang Mai"]
+distinct_unordered = list(set(region_column))
+distinct_ordered = list(dict.fromkeys(region_column))   # preserves first-seen order
+print(f"raw column:         {region_column}")
+print(f"distinct (set):     {distinct_unordered}")
+print(f"distinct (ordered): {distinct_ordered}")
 
-# use case: fast membership testing
+# use case: fast membership testing — validate a category column
 print("\n--- Fast Membership Testing ---")
 valid_categories = {"Electronics", "Furniture", "Clothing", "Accessories"}
-test_values = ["Laptop", "Electronics", "Chair", "Clothing"]
-for val in test_values:
-    status = "valid category" if val in valid_categories else "not a category"
-    print(f"  '{val}': {status}")
+incoming = ["Electronics", "Toys", "Clothing", "Gadgets"]
+for value in incoming:
+    status = "valid" if value in valid_categories else "REJECT"
+    print(f"  {value:12} -> {status}")

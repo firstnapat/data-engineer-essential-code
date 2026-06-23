@@ -1,45 +1,45 @@
 # creating lists
 print("--- Creating Lists ---")
-numbers = [1, 2, 3, 4, 5]
-mixed = [1, "hello", 3.14, True, None]
-nested = [[1, 2], [3, 4], [5, 6]]
-print(f"numbers: {numbers}, length: {len(numbers)}")
+stock_levels = [50, 200, 80, 30, 60]
+mixed_row = ["P001", "Laptop Pro", 35000, True, None]   # a heterogeneous record
+warehouses = [[50, 200], [12, 80], [5, 150]]            # nested: rows per warehouse
+print(f"stock_levels: {stock_levels}, length: {len(stock_levels)}")
 
 # accessing elements — indexing and slicing
 print("\n--- Accessing Elements ---")
-fruits = ["apple", "banana", "cherry", "date", "elderberry"]
-print(f"first:    {fruits[0]}")
-print(f"last:     {fruits[-1]}")
-print(f"slice:    {fruits[1:3]}")
-print(f"every 2nd:{fruits[::2]}")
-print(f"reversed: {fruits[::-1]}")
+cart = ["Laptop Pro", "Wireless Mouse", "Webcam", "Monitor 27in", "Keyboard"]
+print(f"first:     {cart[0]}")
+print(f"last:      {cart[-1]}")
+print(f"slice 1:3: {cart[1:3]}")
+print(f"every 2nd: {cart[::2]}")
+print(f"reversed:  {cart[::-1]}")
 
 # modifying — append, insert, extend, pop, remove
 print("\n--- Modifying ---")
-lst = [1, 2, 3]
-lst.append(4);          print(f"append(4):       {lst}")
-lst.insert(1, 99);      print(f"insert(1, 99):   {lst}")
-lst.extend([5, 6]);     print(f"extend([5,6]):   {lst}")
-removed = lst.pop();    print(f"pop():           {lst}  removed={removed}")
-lst.remove(99);         print(f"remove(99):      {lst}")
+order = ["P001", "P002"]
+order.append("P006");           print(f"append:    {order}")
+order.insert(1, "P009");        print(f"insert:    {order}")
+order.extend(["P011", "P012"]); print(f"extend:    {order}")
+removed = order.pop();          print(f"pop:       {order}  removed={removed}")
+order.remove("P009");           print(f"remove:    {order}")
 
 # sorting
 print("\n--- Sorting ---")
-nums = [3, 1, 4, 1, 5, 9, 2, 6]
-print(f"original:          {nums}")
-print(f"sorted():          {sorted(nums)}")             # returns new list
-print(f"sorted(reverse):   {sorted(nums, reverse=True)}")
-nums.sort()
-print(f"after .sort():     {nums}")
+prices = [35000, 650, 8500, 2800, 12000]
+print(f"original:        {prices}")
+print(f"sorted():        {sorted(prices)}")            # returns a new list
+print(f"sorted(reverse): {sorted(prices, reverse=True)}")
+prices.sort()
+print(f"after .sort():   {prices}")
 
 # searching — in and count
 print("\n--- Searching ---")
-print(f"'apple' in fruits:  {'apple' in fruits}")
-print(f"count('a' in nums): {[3,1,3,3].count(3)}")
+print(f"'Webcam' in cart:   {'Webcam' in cart}")
+print(f"count of 0 stock:   {[50, 0, 80, 0, 0].count(0)}")
 
 # combining lists — + and *
 print("\n--- Combining ---")
-a = [1, 2, 3]
-b = [4, 5, 6]
-print(f"a + b: {a + b}")
-print(f"a * 3: {a * 3}")
+electronics = ["P001", "P002"]
+furniture = ["P006", "P007"]
+print(f"catalog:    {electronics + furniture}")
+print(f"reorder x3: {['P001'] * 3}")

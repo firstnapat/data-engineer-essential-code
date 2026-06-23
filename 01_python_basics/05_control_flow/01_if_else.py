@@ -1,50 +1,48 @@
-# if / elif / else
+# if / elif / else — classify stock level
 print("--- If / Elif / Else ---")
-score = 75
+stock = 8
 
-if score >= 90:
-    grade = "A"
-elif score >= 80:
-    grade = "B"
-elif score >= 70:
-    grade = "C"
-elif score >= 60:
-    grade = "D"
+if stock == 0:
+    status = "out of stock"
+elif stock < 10:
+    status = "reorder now"
+elif stock < 50:
+    status = "low"
 else:
-    grade = "F"
+    status = "healthy"
 
-print(f"Score: {score} -> Grade: {grade}")
+print(f"Stock: {stock} -> {status}")
 
-# ternary (conditional expression)
+# ternary (conditional expression) — free shipping threshold
 print("\n--- Ternary (one-liner) ---")
-age = 20
-status = "adult" if age >= 18 else "minor"
-print(f"Age {age} is: {status}")
+order_total = 1200
+shipping = "free" if order_total >= 1000 else "50 THB"
+print(f"Order total {order_total} -> shipping: {shipping}")
 
-# nested if
+# nested if — choose a carrier by region and weight
 print("\n--- Nested If ---")
-temperature = 28
-humidity = 80
+region = "Bangkok"
+weight_kg = 12
 
-if temperature > 30:
-    weather = "Hot and Humid" if humidity > 70 else "Hot and Dry"
-elif temperature > 20:
-    weather = "Comfortable"
+if region == "Bangkok":
+    carrier = "Same-day" if weight_kg <= 10 else "Next-day"
+elif region in ("Chiang Mai", "Phuket"):
+    carrier = "Express"
 else:
-    weather = "Cold"
+    carrier = "Standard"
 
-print(f"{temperature}°C, {humidity}% humidity -> {weather}")
+print(f"{region}, {weight_kg}kg -> {carrier}")
 
-# combining conditions with and / or
+# combining conditions with and / or — can we fulfil this order?
 print("\n--- and / or in conditions ---")
-username, password = "admin", "secret123"
-if username == "admin" and password == "secret123":
-    print("Login successful!")
+is_paid, in_stock = True, True
+if is_paid and in_stock:
+    print("Order can be shipped!")
 else:
-    print("Invalid credentials.")
+    print("Order on hold.")
 
-# truthy / falsy in conditions
+# truthy / falsy — empty fields in a raw record are 'falsy'
 print("\n--- Truthy / Falsy ---")
-values = [0, 1, "", "hello", None, [], [1], {}, {"a": 1}]
-for val in values:
-    print(f"  {str(val):15} -> {'truthy' if val else 'falsy'}")
+fields = [0, 50, "", "P001", None, [], ["P002"], {}, {"sku": "P001"}]
+for val in fields:
+    print(f"  {str(val):15} -> {'has value' if val else 'empty/missing'}")

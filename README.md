@@ -8,9 +8,10 @@ Structured learning path covering Python fundamentals through data engineering w
 |--------|--------|
 | `00_bash_basics/` | Command line for data engineers: navigation, file management, viewing/searching files, pipes & redirects, environment & shell scripts, plus a mini incident-debugging exercise (scenario-driven, no Python needed) |
 | `01_python_basics/` | Variables, data types, operators, I/O, control flow, functions, data structures, error handling, string manipulation, modules |
-| `02_working_with_data/` | File handling (txt/csv/json), data analysis process, Pandas (incl. Series, merge/join) + EDA workshop, NumPy, visualization |
-| `03_data_ingestion/` | Files, APIs, databases (extract → validate → transform → load) |
-| `04_data_storage/` | Database, Data Lake (RustFS), Data Warehouse (ClickHouse), Data Lakehouse (Delta Lake) |
+| `02_working_with_data/` | Data manipulation with pandas — Series, DataFrame, read/write, selecting, statistics, cleaning, merge/join — taught as a single notebook, plus a practice project and a products EDA workshop |
+| `03_data_sources/` | Where data comes from and its formats: files (text/csv/json/xml/parquet/avro), REST APIs, databases |
+| `04_data_storage/` | Set up the destinations: Database (schema), Data Lake (RustFS), Data Warehouse (ClickHouse), Data Lakehouse (Delta Lake) |
+| `05_data_ingestion/` | Move source data into a destination: → database (schema-on-write), → data lake (schema-on-read), → lakehouse (Delta MERGE upsert) |
 
 ## Prerequisites
 

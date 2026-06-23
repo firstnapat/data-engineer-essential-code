@@ -1,52 +1,52 @@
 # positional parameters
 print("--- Positional Parameters ---")
-def describe_person(name, age, city):
-    print(f"  {name} is {age} years old from {city}.")
+def describe_product(sku, name, price):
+    print(f"  {sku}: {name} ({price:,} THB)")
 
-describe_person("Alice", 25, "Bangkok")
+describe_product("P001", "Laptop Pro", 35000)
 
 # default parameter values
 print("\n--- Default Parameters ---")
-def greet(name, greeting="Hello"):
-    print(f"  {greeting}, {name}!")
+def order_status(order_id, status="pending"):
+    print(f"  Order {order_id}: {status}")
 
-greet("Alice")
-greet("Bob", "Hi")
-greet("Charlie", greeting="Sawadee")
+order_status(1001)
+order_status(1002, "shipped")
+order_status(1003, status="delivered")
 
 # keyword arguments (order-independent)
 print("\n--- Keyword Arguments ---")
-def create_profile(name, age, city, job="Unknown"):
-    return {"name": name, "age": age, "city": city, "job": job}
+def create_order(customer, sku, quantity, region="Bangkok"):
+    return {"customer": customer, "sku": sku, "quantity": quantity, "region": region}
 
-profile = create_profile(age=30, name="Bob", city="Chiang Mai", job="Engineer")
-print(f"  {profile}")
+order = create_order(sku="P001", customer="Alice", quantity=3, region="Chiang Mai")
+print(f"  {order}")
 
-# *args — variable number of positional arguments
+# *args — variable number of line totals to sum into an order total
 print("\n--- *args (variable positional) ---")
-def sum_all(*numbers):
-    return sum(numbers)
+def order_total(*line_totals):
+    return sum(line_totals)
 
-print(f"  sum_all(1,2,3):     {sum_all(1, 2, 3)}")
-print(f"  sum_all(1,2,3,4,5): {sum_all(1, 2, 3, 4, 5)}")
+print(f"  order_total(105000, 9750):        {order_total(105000, 9750):,}")
+print(f"  order_total(105000, 9750, 60000): {order_total(105000, 9750, 60000):,}")
 
-# **kwargs — variable number of keyword arguments
+# **kwargs — variable number of product attributes
 print("\n--- **kwargs (variable keyword) ---")
-def print_info(**kwargs):
-    for key, value in kwargs.items():
+def print_product(**attrs):
+    for key, value in attrs.items():
         print(f"  {key}: {value}")
 
-print_info(name="Alice", age=25, city="Bangkok")
+print_product(sku="P001", name="Laptop Pro", stock=50, supplier="TechCorp")
 
 def build_query(table, **conditions):
-    cond_str = " AND ".join(f"{k}='{v}'" for k, v in conditions.items())
-    return f"SELECT * FROM {table} WHERE {cond_str}"
+    where = " AND ".join(f"{k}='{v}'" for k, v in conditions.items())
+    return f"SELECT * FROM {table} WHERE {where}"
 
-print(f"\n  {build_query('users', name='Alice', city='Bangkok')}")
+print(f"\n  {build_query('orders', region='Bangkok', status='shipped')}")
 
-# combining all parameter types
+# combining all parameter types — a logistics event logger
 print("\n--- Combining All Types ---")
-def mixed(pos1, pos2, *args, kw1="default", **kwargs):
-    print(f"  pos=({pos1},{pos2}), args={args}, kw1={kw1}, kwargs={kwargs}")
+def log_event(event, order_id, *tags, level="INFO", **context):
+    print(f"  [{level}] {event} order={order_id} tags={tags} context={context}")
 
-mixed(1, 2, 3, 4, kw1="custom", extra="value")
+log_event("ship", 1001, "express", "fragile", level="WARN", carrier="Kerry")
