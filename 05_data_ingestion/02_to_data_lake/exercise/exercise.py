@@ -26,8 +26,9 @@ LAKE = "/tmp/lake/exercise_sales"
 # - Print the row count: [extract] <N> rows from sales.csv
 # - Return the DataFrame
 def extract(source: str) -> pd.DataFrame:
-    # TODO: Read the CSV file with date parsing and return the DataFrame
-    pass
+    df_raw = pd.read_csv(source, parse_dates=["date"])
+    print(f"[extract] {len(df_raw)} rows from sales.csv")
+    return df_raw
 
 
 # ── Task 2: Land Partitioned ────────────────────────────────────────────────
@@ -44,9 +45,15 @@ def extract(source: str) -> pd.DataFrame:
 #   4. Write the group to data.parquet (index=False)
 #   5. Print: [land] <N> rows -> region=<region>/data.parquet
 def land_partitioned(df: pd.DataFrame, root: str) -> None:
-    # TODO: Clean up existing path
-    # TODO: Group by region and write one Parquet file per group
-    pass
+    if os.path.exists(root):
+        shutil.rmtree(root)
+
+    for region, group in df.groupby("region"):
+        folder = os.path.join(root, f"region={region}")
+        os.makedirs(folder, exist_ok=True)
+        file_path = os.path.join(folder, "data.parquet")
+        group.to_parquet(file_path, index=False)
+        print(f"[land] {len(group)} rows -> region={region}/data.parquet")
 
 
 # ── Task 3: Read Lake ───────────────────────────────────────────────────────
@@ -63,11 +70,19 @@ def land_partitioned(df: pd.DataFrame, root: str) -> None:
 # path contains "region=<value>" for any value in the regions list.
 #   Hint: files = [f for f in files if any(f"region={r}" in f for r in regions)]
 def read_lake(root: str, regions: list[str] | None = None) -> pd.DataFrame:
-    # TODO: Discover all partition files with glob
-    # TODO: If regions is provided, filter files (partition pruning)
-    # TODO: Read and concat all matching files
-    # TODO: Print file count and row count, then return
-    pass
+    files = glob.glob(os.path.join(root, "region=*", "*.parquet"))
+    files.sort()
+
+    if regions is not None:
+        files = [f for f in files if any(f"region={r}" in f for r in regions)]
+
+    dfs = []
+    for f in files:
+        dfs.append(pd.read_parquet(f))
+
+    df_lake = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
+    print(f"[read] {len(files)} partition file(s) -> {len(df_lake)} rows")
+    return df_lake
 
 
 # ── Task 5: Run the Pipeline & Verify ───────────────────────────────────────

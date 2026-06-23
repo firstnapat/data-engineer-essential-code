@@ -29,14 +29,24 @@ try:
 
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        # TODO: fill in the params dict
+        "latitude": LAT,
+        "longitude": LON,
+        "timezone": TZ,
+        "forecast_days": 3,
+        "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
     }
 
     # TODO: Make the request and parse the response
-    # resp = ...
-    # daily = ...
+    resp = requests.get(url, params=params, timeout=10)
+    resp.raise_for_status()
+    daily = resp.json()["daily"]
 
-    forecast_df = ...  # TODO: build the DataFrame from 'daily'
+    forecast_df = pd.DataFrame({
+        "date": daily["time"],
+        "temp_max": daily["temperature_2m_max"],
+        "temp_min": daily["temperature_2m_min"],
+        "rainfall_mm": daily["precipitation_sum"],
+    })
 
     print(forecast_df)
     print(f"dtypes:\n{forecast_df.dtypes}\n")
@@ -60,8 +70,27 @@ try:
 
     def fetch_forecast(lat: float, lon: float, days: int = 3) -> pd.DataFrame:
         """Fetch weather forecast; return empty DataFrame on failure."""
-        # TODO: implement this function
-        ...
+        api_url = "https://api.open-meteo.com/v1/forecast"
+        api_params = {
+            "latitude": lat,
+            "longitude": lon,
+            "timezone": TZ,
+            "forecast_days": days,
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+        }
+        try:
+            response = requests.get(api_url, params=api_params, timeout=10)
+            response.raise_for_status()
+            data = response.json()["daily"]
+            return pd.DataFrame({
+                "date": data["time"],
+                "temp_max": data["temperature_2m_max"],
+                "temp_min": data["temperature_2m_min"],
+                "rainfall_mm": data["precipitation_sum"],
+            })
+        except requests.RequestException as e:
+            print(f"Error: {e}")
+            return pd.DataFrame()
 
     # Test with valid coordinates
     result = fetch_forecast(LAT, LON, days=3)
@@ -88,8 +117,10 @@ try:
     # Hint: Same pattern as clean() in work_with_api.py (which adds temp_avg).
 
     def clean(df: pd.DataFrame) -> pd.DataFrame:
-        # TODO: implement this function
-        ...
+        df_clean = df.copy()
+        df_clean["date"] = pd.to_datetime(df_clean["date"])
+        df_clean["temp_range"] = df_clean["temp_max"] - df_clean["temp_min"]
+        return df_clean
 
     cleaned = clean(forecast_df)
     print(cleaned)
@@ -113,8 +144,8 @@ try:
     #   2. Total rainfall in mm (rounded to 1 decimal)
     # Hint: Use .mean() and .sum()
 
-    avg_temp_max = ...   # TODO: calculate average of temp_max
-    total_rain = ...     # TODO: calculate sum of rainfall_mm
+    avg_temp_max = round(float(cleaned["temp_max"].mean()), 1)
+    total_rain = round(float(cleaned["rainfall_mm"].sum()), 1)
 
     print(f"Chiang Mai 3-day forecast summary:")
     print(f"  Average high temperature: {avg_temp_max}°C")

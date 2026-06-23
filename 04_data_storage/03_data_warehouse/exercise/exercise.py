@@ -43,7 +43,9 @@ try:
     CH_USER     = os.getenv("CLICKHOUSE_USER", "default")
     CH_PASSWORD = os.getenv("CLICKHOUSE_PASSWORD", "")
 
-    client = None  # Replace with your Client(...) call
+    client = Client(host=CH_HOST, port=CH_PORT,
+                                 database=CH_DB, user=CH_USER,
+                                 password=CH_PASSWORD)
 
     print("[dw] Connected to ClickHouse")
 
@@ -65,77 +67,76 @@ try:
     #       Then truncate: client.execute("TRUNCATE TABLE IF EXISTS products")
 
     CREATE_PRODUCTS_SQL = """
-    -- TODO: Write your CREATE TABLE statement here
+    CREATE TABLE IF NOT EXISTS products (
+        id String,
+        name String,
+        category LowCardinality(String),
+        unit_price Float32,
+        stock UInt32,
+        supplier String
+    ) ENGINE = MergeTree()
+    ORDER BY (category, id)
     """
 
-    # client.execute(CREATE_PRODUCTS_SQL)
-    # client.execute("TRUNCATE TABLE IF EXISTS products")
+    client.execute(CREATE_PRODUCTS_SQL)
+    client.execute("TRUNCATE TABLE IF EXISTS products")
     print("[dw] Table 'products' ready")
 
     # =========================================================================
     # Task 3: Read products.json and insert all rows
     # =========================================================================
     print("\n--- Task 3: Insert product data ---")
-    # TODO (Step A): Read products.json and flatten using json_normalize.
-    #       data = json.load(open(os.path.join(DATASETS, "products.json")))
-    #       df = pd.json_normalize(data, record_path="products")
+    data = json.load(open(os.path.join(DATASETS, "products.json")))
+    df = pd.json_normalize(data, record_path="products")
 
-    # TODO (Step B): Convert to records and insert into ClickHouse.
-    #       records = df.to_dict("records")
-    #       client.execute(
-    #           "INSERT INTO products (id, name, category, unit_price, stock, supplier) VALUES",
-    #           [(r["id"], r["name"], r["category"],
-    #             float(r["unit_price"]), int(r["stock"]), r["supplier"])
-    #            for r in records]
-    #       )
+    records = df.to_dict("records")
+    client.execute(
+        "INSERT INTO products (id, name, category, unit_price, stock, supplier) VALUES",
+        [(r["id"], r["name"], r["category"],
+          float(r["unit_price"]), int(r["stock"]), r["supplier"])
+         for r in records]
+    )
 
-    # print(f"[dw] Inserted {len(records)} products")
+    print(f"[dw] Inserted {len(records)} products")
 
     # =========================================================================
     # Task 4: Analytics query — avg price and total stock by category
     # =========================================================================
     print("\n--- Task 4: Average price & total stock by category ---")
-    # TODO: Write a SQL query that returns:
-    #         category, avg(unit_price) AS avg_price, sum(stock) AS total_stock
-    #       grouped by category, ordered by avg_price DESC.
-    #       Execute with: client.execute(sql, with_column_types=True)
-    #       The result is a tuple: (data, column_types)
-    #       Build a DataFrame: pd.DataFrame(data, columns=[c[0] for c in cols])
-
     ANALYTICS_SQL = """
-    -- TODO: Write your analytics query here
+    SELECT category, avg(unit_price) AS avg_price, sum(stock) AS total_stock
+    FROM products
+    GROUP BY category
+    ORDER BY avg_price DESC
     """
 
-    # data, cols = client.execute(ANALYTICS_SQL, with_column_types=True)
-    # col_names = [c[0] for c in cols]
-    # result = pd.DataFrame(data, columns=col_names)
-    # print(result)
+    data, cols = client.execute(ANALYTICS_SQL, with_column_types=True)
+    col_names = [c[0] for c in cols]
+    result = pd.DataFrame(data, columns=col_names)
+    print(result)
 
     # =========================================================================
     # Task 5: Low stock alert — products with stock < 50
     # =========================================================================
     print("\n--- Task 5: Low stock alert (stock < 50) ---")
-    # TODO: Write a SQL query to find products where stock < 50.
-    #       Select: id, name, category, stock
-    #       Order by stock ASC.
-    #       Execute and display as a DataFrame.
-
     LOW_STOCK_SQL = """
-    -- TODO: Write your low stock query here
+    SELECT id, name, category, stock
+    FROM products
+    WHERE stock < 50
+    ORDER BY stock ASC
     """
 
-    # data, cols = client.execute(LOW_STOCK_SQL, with_column_types=True)
-    # col_names = [c[0] for c in cols]
-    # low_stock_df = pd.DataFrame(data, columns=col_names)
-    # print(low_stock_df)
+    data, cols = client.execute(LOW_STOCK_SQL, with_column_types=True)
+    col_names = [c[0] for c in cols]
+    low_stock_df = pd.DataFrame(data, columns=col_names)
+    print(low_stock_df)
 
     # --- Verification ---
-    # Uncomment after completing all tasks:
-    # row_count = client.execute("SELECT count() FROM products")[0][0]
-    # assert row_count == 13, f"Expected 13 products, got {row_count}"
-    # cat_count = client.execute("SELECT uniq(category) FROM products")[0][0]
-    # assert cat_count == 4, f"Expected 4 categories, got {cat_count}"
-    # print("\n✅ All verifications passed!")
+    row_count = client.execute("SELECT count() FROM products")[0][0]
+    assert row_count == 13, f"Expected 13 products, got {row_count}"
+    cat_count = client.execute("SELECT uniq(category) FROM products")[0][0]
+    assert cat_count == 4, f"Expected 4 categories, got {cat_count}"
+    print("\n✅ All verifications passed!")
 
 except Exception as e:
     print(f"\n❌ ClickHouse connection failed: {e}")

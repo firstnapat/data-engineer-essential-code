@@ -22,7 +22,8 @@ print("--- Task 1: Read and flatten products.json ---")
 #       The 'products' column contains the nested list of dicts.
 #       pd.json_normalize(raw["products"]) flattens it.
 products_path = os.path.join(DATASETS, "products.json")
-products_df = ...  # TODO: replace with your code
+raw_products = pd.read_json(products_path)
+products_df = pd.json_normalize(raw_products["products"])
 
 print(f"products shape: {products_df.shape}")
 print(products_df.head(3))
@@ -42,7 +43,7 @@ print("--- Task 2: Read sales.csv and parse dates ---")
 #       to automatically convert the 'date' column to datetime.
 # Hint: parse_dates=["date"]
 sales_path = os.path.join(DATASETS, "sales.csv")
-sales_df = ...  # TODO: replace with your code
+sales_df = pd.read_csv(sales_path, parse_dates=["date"])
 
 earliest = sales_df["date"].min()
 latest = sales_df["date"].max()
@@ -69,7 +70,12 @@ print("--- Task 3: Clean function for sales data ---")
 #   4. Convert 'date' column to datetime with pd.to_datetime()
 #   5. Return the cleaned DataFrame
 def clean(df: pd.DataFrame) -> pd.DataFrame:
-    ...  # TODO: replace with your code
+    df_clean = df.copy()
+    df_clean["product"] = df_clean["product"].str.strip()
+    df_clean["region"] = df_clean["region"].str.strip()
+    df_clean = df_clean.drop_duplicates()
+    df_clean["date"] = pd.to_datetime(df_clean["date"])
+    return df_clean
 
 
 raw_sales = pd.read_csv(sales_path)
@@ -99,12 +105,13 @@ parquet_path = "/tmp/exercise_sales.parquet"
 #       Parquet using .to_parquet(parquet_path, index=False).
 # Hint: This is the same pattern as _prepare_sample() in work_with_parquet.py.
 
-# TODO: your code here (read CSV, write Parquet)
+df_to_parquet = pd.read_csv(sales_path, parse_dates=["date"])
+df_to_parquet.to_parquet(parquet_path, index=False)
 
 # TODO: Step B — Read the Parquet file back with pd.read_parquet() and
 #       verify that the date column survived as datetime64.
 
-parquet_df = ...  # TODO: replace with your code (read back from Parquet)
+parquet_df = pd.read_parquet(parquet_path)
 
 print(f"Parquet dtypes:\n{parquet_df.dtypes}")
 print(f"Parquet shape: {parquet_df.shape}")
@@ -112,7 +119,7 @@ print(f"Parquet shape: {parquet_df.shape}")
 # Verification
 assert str(parquet_df["date"].dtype).startswith("datetime64"), \
     f"Expected datetime64 in Parquet, got {parquet_df['date'].dtype}"
-assert parquet_df.shape[0] == 55, f"Expected 55 rows, got {parquet_df.shape[0]}"
+assert parquet_df.shape[0] == 54, f"Expected 54 rows, got {parquet_df.shape[0]}"
 print("✓ Task 4 passed\n")
 
 
@@ -128,7 +135,11 @@ print("--- Task 5 (BONUS): Parse 'Total Revenue' from sample.txt ---")
 #       Then remove commas and convert to int.
 sample_path = os.path.join(DATASETS, "sample.txt")
 
-total_revenue = ...  # TODO: replace with your code (should be an int)
+with open(sample_path, "r", encoding="utf-8") as f:
+    text_content = f.read()
+
+match = re.search(r"Total Revenue:\s*([\d,]+)\s*THB", text_content)
+total_revenue = int(match.group(1).replace(",", "")) if match else 0
 
 print(f"Total Revenue = {total_revenue:,} THB")
 

@@ -28,8 +28,10 @@ DELTA = "/tmp/lakehouse/exercise_sales"
 # - Print: [extract] <N> rows
 # - Return the DataFrame
 def extract(source: str) -> pd.DataFrame:
-    # TODO: Read CSV, add sale_id column, print count, return
-    pass
+    df_raw = pd.read_csv(source, parse_dates=["date"])
+    df_raw.insert(0, "sale_id", df_raw.index.astype("int64"))
+    print(f"[extract] {len(df_raw)} rows")
+    return df_raw
 
 
 # ── Task 2: Initial Load ────────────────────────────────────────────────────
@@ -38,8 +40,10 @@ def extract(source: str) -> pd.DataFrame:
 # - Use write_deltalake(path, df, mode="overwrite")
 # - Print: [load] initial <N> rows -> Delta table
 def initial_load(df: pd.DataFrame, path: str) -> None:
-    # TODO: Clean up existing path, then write Delta table
-    pass
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    write_deltalake(path, df, mode="overwrite")
+    print(f"[load] initial {len(df)} rows -> Delta table")
 
 
 # ── Task 3: Upsert (MERGE) ──────────────────────────────────────────────────
@@ -57,8 +61,19 @@ def initial_load(df: pd.DataFrame, path: str) -> None:
 #   5. Chain .execute()
 #   6. Print: [upsert] merged <N> rows
 def upsert(df: pd.DataFrame, path: str) -> None:
-    # TODO: Implement the MERGE operation using DeltaTable API
-    pass
+    dt = DeltaTable(path)
+    (
+        dt.merge(
+            source=df,
+            predicate="target.sale_id = source.sale_id",
+            source_alias="source",
+            target_alias="target"
+        )
+        .when_matched_update_all()
+        .when_not_matched_insert_all()
+        .execute()
+    )
+    print(f"[upsert] merged {len(df)} rows")
 
 
 # ── Task 4 & 5: Run the Pipeline & Verify ───────────────────────────────────
@@ -85,16 +100,16 @@ if __name__ == "__main__":
     # TODO: Create 'updated' — copy df.head(1) and set revenue = 999999
     updated = df.head(1).copy()
     # TODO: Set the revenue to 999999
-    # updated["revenue"] = ???
+    updated["revenue"] = 999999
 
     # TODO: Create 'inserted' — copy df.tail(1) and set sale_id = max + 1
     inserted = df.tail(1).copy()
     # TODO: Set the sale_id to df["sale_id"].max() + 1
-    # inserted["sale_id"] = ???
+    inserted["sale_id"] = df["sale_id"].max() + 1
 
     # TODO: Concat updated and inserted, then call upsert()
-    # batch = pd.concat([updated, inserted], ignore_index=True)
-    # upsert(batch, DELTA)
+    batch = pd.concat([updated, inserted], ignore_index=True)
+    upsert(batch, DELTA)
     print()
 
     print("--- Task 5: Verify ---")

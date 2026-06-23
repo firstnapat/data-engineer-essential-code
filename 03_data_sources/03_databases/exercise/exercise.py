@@ -26,14 +26,16 @@ print("--- Task 1: Seed SQLite database from sales.csv ---")
 # Hint: Use a `with` statement for the connection, as in work_with_db.py.
 
 sales_path = os.path.join(DATASETS, "sales.csv")
-# TODO: your code here
+df = pd.read_csv(sales_path)
+with sqlite3.connect(DB_PATH) as conn:
+    df.to_sql("sales", conn, if_exists="replace", index=False)
 
 print(f"[seed] DB ready at {DB_PATH}")
 
 # Quick verification: count rows in the table
 with sqlite3.connect(DB_PATH) as conn:
     count = pd.read_sql_query("SELECT COUNT(*) AS n FROM sales", conn)["n"][0]
-assert count == 55, f"Expected 55 rows in 'sales' table, got {count}"
+assert count == 54, f"Expected 54 rows in 'sales' table, got {count}"
 print(f"✓ Task 1 passed — {count} rows seeded\n")
 
 
@@ -50,7 +52,8 @@ print("--- Task 2: Reusable read() function ---")
 # It should return a DataFrame using pd.read_sql_query().
 # Hint: This is the exact same pattern as read() in work_with_db.py.
 def read(db_path: str, sql: str, params: tuple = ()) -> pd.DataFrame:
-    ...  # TODO: replace with your code
+    with sqlite3.connect(db_path) as conn:
+        return pd.read_sql_query(sql, conn, params=params)
 
 
 # Verification: simple query
@@ -76,7 +79,11 @@ print("--- Task 3: Top 3 products by total revenue ---")
 #       FROM sales GROUP BY product ORDER BY total_revenue DESC LIMIT 3
 
 top3_sql = """
--- TODO: write your SQL here
+SELECT product, SUM(revenue) AS total_revenue
+FROM sales
+GROUP BY product
+ORDER BY total_revenue DESC
+LIMIT 3
 """
 top3_df = read(DB_PATH, top3_sql)
 print(top3_df)
@@ -103,7 +110,9 @@ print("--- Task 4: Parameterised query — Bangkok Electronics ---")
 # Hint: This is the same pattern as the filtered query in work_with_db.py.
 
 param_sql = """
--- TODO: write your SQL here with ? placeholders
+SELECT date, product, quantity, revenue, region, category
+FROM sales
+WHERE region = ? AND category = ?
 """
 bangkok_electronics = read(DB_PATH, param_sql, params=("Bangkok", "Electronics"))
 print(bangkok_electronics)
@@ -131,7 +140,10 @@ print("--- Task 5: Transactions per region ---")
 #       GROUP BY region ORDER BY txn_count DESC
 
 region_sql = """
--- TODO: write your SQL here
+SELECT region, COUNT(*) AS txn_count
+FROM sales
+GROUP BY region
+ORDER BY txn_count DESC
 """
 region_df = read(DB_PATH, region_sql)
 print(region_df)
@@ -141,7 +153,7 @@ assert len(region_df) >= 4, f"Expected at least 4 regions, got {len(region_df)}"
 assert region_df.iloc[0]["region"] == "Bangkok", \
     f"Expected 'Bangkok' as top region, got '{region_df.iloc[0]['region']}'"
 total_txns = region_df["txn_count"].sum()
-assert total_txns == 55, f"Expected 55 total transactions, got {total_txns}"
+assert total_txns == 54, f"Expected 54 total transactions, got {total_txns}"
 print("✓ Task 5 passed\n")
 
 

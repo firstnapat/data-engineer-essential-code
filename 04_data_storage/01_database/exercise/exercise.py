@@ -25,11 +25,12 @@ with sqlite3.connect(DB_PATH) as conn:
     # Task 1: Create dim_category table
     # =========================================================================
     print("\n--- Task 1: Create dim_category table ---")
-    # TODO: Use conn.executescript() to create a table called dim_category
-    #       with columns:
-    #         - category_id  INTEGER PRIMARY KEY AUTOINCREMENT
-    #         - name         TEXT NOT NULL UNIQUE
-    #       Use CREATE TABLE IF NOT EXISTS.
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS dim_category (
+        category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE
+    );
+    """)
 
     print("[schema] dim_category table created")
 
@@ -37,10 +38,8 @@ with sqlite3.connect(DB_PATH) as conn:
     # Task 2: Load unique categories into dim_category
     # =========================================================================
     print("\n--- Task 2: Load categories from sales.csv ---")
-    # TODO: Get unique categories from df["category"] and insert each one
-    #       into dim_category using:
-    #         conn.execute("INSERT OR IGNORE INTO dim_category (name) VALUES (?)", (name,))
-    #       Hint: loop over df["category"].unique()
+    for name in df["category"].unique():
+        conn.execute("INSERT OR IGNORE INTO dim_category (name) VALUES (?)", (name,))
 
     print("[dim] Categories loaded")
 
@@ -48,11 +47,8 @@ with sqlite3.connect(DB_PATH) as conn:
     # Task 3: Build a category lookup dictionary
     # =========================================================================
     print("\n--- Task 3: Build category lookup dict ---")
-    # TODO: Query dim_category to build a dictionary mapping name -> category_id.
-    #       Use: conn.execute("SELECT category_id, name FROM dim_category")
-    #       Store the result in a variable called `categories` (dict).
-    #       Example result: {"Electronics": 1, "Furniture": 2, ...}
-    categories = {}  # Replace with your code
+    cursor = conn.execute("SELECT category_id, name FROM dim_category")
+    categories = {name: category_id for category_id, name in cursor.fetchall()}
 
     print(f"Category lookup: {categories}")
 
@@ -60,34 +56,36 @@ with sqlite3.connect(DB_PATH) as conn:
     # Task 4: Create fact_sales with FK to dim_category + revenue query
     # =========================================================================
     print("\n--- Task 4: Create fact_sales and query revenue by category ---")
-    # TODO (Step A): Use conn.executescript() to create fact_sales table with:
-    #         - id           INTEGER PRIMARY KEY AUTOINCREMENT
-    #         - sale_date    TEXT NOT NULL
-    #         - category_id  INTEGER REFERENCES dim_category(category_id)
-    #         - quantity     INTEGER NOT NULL
-    #         - unit_price   REAL NOT NULL
-    #         - revenue      REAL NOT NULL
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS fact_sales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sale_date TEXT NOT NULL,
+        category_id INTEGER REFERENCES dim_category(category_id),
+        quantity INTEGER NOT NULL,
+        unit_price REAL NOT NULL,
+        revenue REAL NOT NULL
+    );
+    """)
 
-    # TODO (Step B): Insert rows from df into fact_sales.
-    #       For each row, look up the category_id using your `categories` dict.
-    #       Use conn.executemany() with this SQL:
-    #         "INSERT INTO fact_sales (sale_date, category_id, quantity, unit_price, revenue) VALUES (?,?,?,?,?)"
-    #       Build a list of tuples: (str(row["date"]), categories[row["category"]],
-    #                                int(row["quantity"]), float(row["unit_price"]),
-    #                                float(row["revenue"]))
+    sales_tuples = [
+        (str(row["date"]), categories[row["category"]], int(row["quantity"]), float(row["unit_price"]), float(row["revenue"]))
+        for _, row in df.iterrows()
+    ]
+    conn.executemany(
+        "INSERT INTO fact_sales (sale_date, category_id, quantity, unit_price, revenue) VALUES (?,?,?,?,?)",
+        sales_tuples
+    )
 
-    # TODO (Step C): Write a SQL query that JOINs fact_sales with dim_category
-    #       to get total revenue by category name. Use pd.read_sql_query().
-    #       SQL hint:
-    #         SELECT c.name, SUM(f.revenue) AS total_revenue
-    #         FROM fact_sales f
-    #         JOIN dim_category c ON f.category_id = c.category_id
-    #         GROUP BY c.name
-    #         ORDER BY total_revenue DESC
-    #       Store the result in `revenue_by_cat`.
+    revenue_by_cat = pd.read_sql_query("""
+        SELECT c.name, SUM(f.revenue) AS total_revenue
+        FROM fact_sales f
+        JOIN dim_category c ON f.category_id = c.category_id
+        GROUP BY c.name
+        ORDER BY total_revenue DESC
+    """, conn)
 
     # Uncomment after completing Step C:
-    # print(revenue_by_cat)
+    print(revenue_by_cat)
 
     # =========================================================================
     # Task 5: Verification

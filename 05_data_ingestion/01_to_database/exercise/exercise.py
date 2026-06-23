@@ -27,8 +27,9 @@ REQUIRED_COLUMNS = {"date", "product", "category", "quantity", "unit_price", "re
 # - Print the row count in the format: [extract] <N> rows from sales.csv
 # - Return the DataFrame
 def extract(source: str) -> pd.DataFrame:
-    # TODO: Read the CSV file with date parsing and return the DataFrame
-    pass
+    df_raw = pd.read_csv(source, parse_dates=["date"])
+    print(f"[extract] {len(df_raw)} rows from sales.csv")
+    return df_raw
 
 
 # ── Task 2: Validate ────────────────────────────────────────────────────────
@@ -41,10 +42,13 @@ def extract(source: str) -> pd.DataFrame:
 #       Raise ValueError("numeric fields contain nulls") if there are nulls
 # Print "[validate] schema OK" if all checks pass, then return the DataFrame.
 def validate(df: pd.DataFrame) -> pd.DataFrame:
-    # TODO: Check for missing columns
-    # TODO: Check for nulls in numeric fields
-    # TODO: Print success message and return df
-    pass
+    missing = REQUIRED_COLUMNS - set(df.columns)
+    if missing:
+        raise ValueError(f"missing columns: {missing}")
+    if df[["quantity", "unit_price", "revenue"]].isnull().any().any():
+        raise ValueError("numeric fields contain nulls")
+    print("[validate] schema OK")
+    return df
 
 
 # ── Task 3: Create Schema ───────────────────────────────────────────────────
@@ -65,8 +69,22 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
 #
 # Use CREATE TABLE IF NOT EXISTS. Print "[schema] tables ready".
 def create_schema(conn: sqlite3.Connection) -> None:
-    # TODO: Execute DDL to create dim_product and fact_sales tables
-    pass
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS dim_product (
+        product_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        category TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS fact_sales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sale_date TEXT NOT NULL,
+        product_id INTEGER REFERENCES dim_product(product_id),
+        quantity INTEGER NOT NULL,
+        unit_price REAL NOT NULL,
+        revenue REAL NOT NULL
+    );
+    """)
+    print("[schema] tables ready")
 
 
 # ── Task 4: Load ────────────────────────────────────────────────────────────
@@ -80,11 +98,22 @@ def create_schema(conn: sqlite3.Connection) -> None:
 #   Step D — Insert all rows using conn.executemany()
 # Print "[load] <N> fact rows loaded".
 def load(conn: sqlite3.Connection, df: pd.DataFrame) -> None:
-    # TODO: Step A — insert unique products
-    # TODO: Step B — build product name → id lookup
-    # TODO: Step C — build fact row tuples
-    # TODO: Step D — executemany into fact_sales
-    pass
+    products = df[["product", "category"]].drop_duplicates().values
+    conn.executemany("INSERT OR IGNORE INTO dim_product (name, category) VALUES (?, ?)", products)
+
+    cursor = conn.execute("SELECT product_id, name FROM dim_product")
+    lookup = {name: pid for pid, name in cursor.fetchall()}
+
+    fact_rows = [
+        (str(row["date"]), lookup[row["product"]], int(row["quantity"]), float(row["unit_price"]), float(row["revenue"]))
+        for _, row in df.iterrows()
+    ]
+
+    conn.executemany(
+        "INSERT INTO fact_sales (sale_date, product_id, quantity, unit_price, revenue) VALUES (?, ?, ?, ?, ?)",
+        fact_rows
+    )
+    print(f"[load] {len(fact_rows)} fact rows loaded")
 
 
 # ── Task 5: Run the Pipeline & Verify ───────────────────────────────────────
@@ -129,8 +158,13 @@ if __name__ == "__main__":
         #       JOIN dim_product p ON f.product_id = p.product_id
         #       GROUP BY p.category ORDER BY revenue DESC
         verify = pd.read_sql_query(
-            # TODO: Replace this string with the correct SQL query
-            "SELECT 1",
+            """
+            SELECT p.category, SUM(f.revenue) AS revenue
+            FROM fact_sales f
+            JOIN dim_product p ON f.product_id = p.product_id
+            GROUP BY p.category
+            ORDER BY revenue DESC
+            """,
             conn,
         )
         print(verify)
