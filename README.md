@@ -31,18 +31,29 @@ docker compose up -d            # start Postgres, ClickHouse, and RustFS
 
 Stop the services with `docker compose down` (add `-v` to also wipe the data volumes).
 
-## Running Examples
+# Running Examples
 
 ```bash
 # Run any Python script
-uv run 01_python_basics/01_variables/01_variables.py
-uv run 02_working_with_data/02_data_analysis_process/04_eda.py
+uv run 03_data_sources/01_files/work_with_csv.py
+uv run 05_data_ingestion/01_to_database/load_to_database.py
 
-# Open the EDA workshop notebook
-uv run jupyter notebook 02_working_with_data/03_pandas/workshop_eda.ipynb
+# Open the pandas notebooks
+uv run jupyter notebook 02_working_with_data/01_pandas/01_pandas.ipynb
+uv run jupyter notebook 02_working_with_data/02_assignment/workshop_eda.ipynb
 ```
 
 The `00_bash_basics/` module needs no Python — work through it directly in a terminal (`cd 00_bash_basics` and follow its `README.md`).
+
+## Exercises & Solutions
+
+Each module from 03 to 05 includes a hands-on exercise in an `exercise/exercise.py` directory (e.g., `03_data_sources/01_files/exercise/exercise.py`). These exercises contain `TODO` items and test assertions for students to implement and verify their code.
+
+The completed, fully working solutions to all these exercises are available on the **`teacher-guide`** branch. You can check it out with:
+
+```bash
+git checkout teacher-guide
+```
 
 ## External Services
 
@@ -53,7 +64,7 @@ The storage modules in `04_data_storage/` connect to backends. SQLite and Delta 
 | SQLite | `04_data_storage/01_database/` | Built-in, no setup |
 | RustFS (S3) | `04_data_storage/02_data_lake/` | S3 `:9000`, console `:9001` |
 | ClickHouse | `04_data_storage/03_data_warehouse/` | native `:9009`, HTTP `:8123` |
-| PostgreSQL | ingestion / database examples | `:5432` |
+| PostgreSQL | Ingestion / database examples | `:5432` |
 | Delta Lake | `04_data_storage/04_data_lakehouse/` | No service — writes to `/tmp/delta/` |
 
 > RustFS and ClickHouse both default to port 9000. To run them side by side, RustFS keeps `:9000` (the S3 endpoint) and ClickHouse's native protocol is mapped to host `:9009` (`CLICKHOUSE_PORT` in `.env`). The RustFS console is at <http://localhost:9001> (login `minioadmin` / `minioadmin`).
@@ -64,4 +75,5 @@ The storage modules in `04_data_storage/` connect to backends. SQLite and Delta 
 |------|-------------|
 | `datasets/sales.csv` | Q1 2024 sales data (54 rows): date, product, category, quantity, unit_price, revenue, region |
 | `datasets/products.json` | 13-product catalog with nested structure |
+| `datasets/products.xml` | 13-product catalog in XML format |
 | `datasets/sample.txt` | Plain text for file-handling exercises |
