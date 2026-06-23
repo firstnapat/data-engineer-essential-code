@@ -1,9 +1,11 @@
+# single return value
 print("--- Single Return ---")
 def square(n):
     return n ** 2
 
 print(f"square(5) = {square(5)}")
 
+# multiple return values (tuple unpacking)
 print("\n--- Multiple Return Values (tuple unpacking) ---")
 def min_max(numbers):
     return min(numbers), max(numbers)
@@ -23,6 +25,7 @@ def get_stats(numbers):
 for key, val in get_stats([10, 20, 30, 40, 50]).items():
     print(f"  {key}: {val}")
 
+# early return (guard clause)
 print("\n--- Early Return ---")
 def safe_divide(a, b):
     if b == 0:
@@ -32,6 +35,7 @@ def safe_divide(a, b):
 print(f"safe_divide(10, 2) = {safe_divide(10, 2)}")
 print(f"safe_divide(10, 0) = {safe_divide(10, 0)}")
 
+# generator — yield values lazily
 print("\n--- Generator (yield) ---")
 def fibonacci(n):
     a, b = 0, 1
@@ -41,6 +45,7 @@ def fibonacci(n):
 
 print(f"Fibonacci: {list(fibonacci(10))}")
 
+# closure — function returning a function
 print("\n--- Function Returning Function (closure) ---")
 def make_multiplier(factor):
     def multiplier(x):

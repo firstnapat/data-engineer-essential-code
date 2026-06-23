@@ -1,9 +1,11 @@
+# basic function — def and call
 print("--- Basic Function ---")
 def greet():
     print("Hello, World!")
 
 greet()
 
+# docstring and return value
 print("\n--- With Docstring ---")
 def calculate_area(width, height):
     """Calculate the area of a rectangle."""
@@ -12,6 +14,7 @@ def calculate_area(width, height):
 print(f"Area: {calculate_area(5, 3)}")
 print(f"Docstring: {calculate_area.__doc__}")
 
+# functions are first-class objects (pass around like values)
 print("\n--- Functions Are First-Class Objects ---")
 def add(a, b): return a + b
 def subtract(a, b): return a - b
@@ -19,6 +22,7 @@ def subtract(a, b): return a - b
 for op in [add, subtract]:
     print(f"  {op.__name__}(10, 3) = {op(10, 3)}")
 
+# lambda (anonymous) functions
 print("\n--- Lambda Functions ---")
 square = lambda x: x ** 2
 double = lambda x: x * 2
@@ -28,6 +32,7 @@ people = [{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}, {"name": "Ch
 sorted_people = sorted(people, key=lambda p: p["age"])
 print(f"sorted by age: {[p['name'] for p in sorted_people]}")
 
+# scope — local vs global variables
 print("\n--- Scope ---")
 global_var = "I am global"
 

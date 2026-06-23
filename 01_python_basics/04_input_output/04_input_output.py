@@ -1,9 +1,11 @@
+# basic print() — sep and end
 print("--- Basic print() ---")
 print("Hello, World!")
 print("A", "B", "C", sep=" | ")
 print("No newline -", end=" ")
 print("same line")
 
+# f-strings — formatting numbers and alignment
 print("\n--- f-strings ---")
 name = "Alice"
 score = 98.567
@@ -17,10 +19,12 @@ print(f"Right-align: {name:>10}")  # right-align in 10 chars
 print(f"Left-align:  {name:<10}|") # left-align in 10 chars
 print(f"Zero-pad:    {42:05d}")    # 00042
 
+# .format() — older string formatting
 print("\n--- .format() ---")
 template = "Hello, {}! You scored {:.1f}%."
 print(template.format("Bob", 87.5))
 
+# reading input (input() shown commented; simulated here)
 print("\n--- Input (simulated — normally use input()) ---")
 # user_name = input("Enter your name: ")
 # age = int(input("Enter your age: "))

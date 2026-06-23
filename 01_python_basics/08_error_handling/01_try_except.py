@@ -1,9 +1,11 @@
+# basic try / except
 print("--- Basic Try / Except ---")
 try:
     result = 10 / 0
 except ZeroDivisionError:
     print("Cannot divide by zero!")
 
+# catching multiple exception types
 print("\n--- Catching Multiple Exceptions ---")
 def parse_number(value):
     try:
@@ -19,6 +21,7 @@ parse_number("123")
 parse_number("abc")
 parse_number(None)
 
+# accessing the exception object (as e)
 print("\n--- Except with Exception Info ---")
 try:
     data = {"key": "value"}
@@ -26,6 +29,7 @@ try:
 except KeyError as e:
     print(f"Key not found: {e} (type: {type(e).__name__})")
 
+# else and finally clauses
 print("\n--- else and finally ---")
 def safe_open(filename):
     try:
@@ -43,6 +47,7 @@ def safe_open(filename):
 
 safe_open("nonexistent.txt")
 
+# raising exceptions
 print("\n--- Raising Exceptions ---")
 def validate_age(age):
     if not isinstance(age, int):
@@ -61,6 +66,7 @@ try:
 except TypeError as e:
     print(f"TypeError: {e}")
 
+# custom exception class
 print("\n--- Custom Exception ---")
 class DataValidationError(Exception):
     def __init__(self, field, message):
