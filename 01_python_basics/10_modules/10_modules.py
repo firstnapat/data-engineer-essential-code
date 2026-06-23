@@ -15,8 +15,8 @@ print(f"sales_utils.VAT_RATE               = {sales_utils.VAT_RATE}")
 
 # import specific names directly
 print("\n--- from sales_utils import ... ---")
-from sales_utils import add_vat, format_currency
-print(f"add_vat(100)         = {add_vat(100)}")
+from sales_utils import is_low_stock, format_currency
+print(f"is_low_stock(8)      = {is_low_stock(8)}")
 print(f"format_currency(rev) = {format_currency(rev)}")
 
 # import with an alias

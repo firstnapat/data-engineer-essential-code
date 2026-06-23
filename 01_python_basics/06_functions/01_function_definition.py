@@ -1,45 +1,49 @@
 # basic function — def and call
 print("--- Basic Function ---")
-def greet():
-    print("Hello, World!")
+def print_receipt_header():
+    print("=== TechData Store Receipt ===")
 
-greet()
+print_receipt_header()
 
 # docstring and return value
 print("\n--- With Docstring ---")
-def calculate_area(width, height):
-    """Calculate the area of a rectangle."""
-    return width * height
+def line_revenue(quantity, unit_price):
+    """Return total revenue for one order line."""
+    return quantity * unit_price
 
-print(f"Area: {calculate_area(5, 3)}")
-print(f"Docstring: {calculate_area.__doc__}")
+print(f"Revenue: {line_revenue(3, 35000):,}")
+print(f"Docstring: {line_revenue.__doc__}")
 
-# functions are first-class objects (pass around like values)
+# functions are first-class objects (pass them around like values)
 print("\n--- Functions Are First-Class Objects ---")
-def add(a, b): return a + b
-def subtract(a, b): return a - b
+def apply_vat(amount):      return round(amount * 1.07, 2)
+def apply_discount(amount): return round(amount * 0.90, 2)
 
-for op in [add, subtract]:
-    print(f"  {op.__name__}(10, 3) = {op(10, 3)}")
+base = 1000
+for adjust in [apply_vat, apply_discount]:
+    print(f"  {adjust.__name__}(1000) = {adjust(base)}")
 
-# lambda (anonymous) functions
+# lambda (anonymous) functions — quick, inline
 print("\n--- Lambda Functions ---")
-square = lambda x: x ** 2
-double = lambda x: x * 2
-print(f"square(5)={square(5)}, double(7)={double(7)}")
+revenue = lambda qty, price: qty * price
+print(f"revenue(3, 35000) = {revenue(3, 35000):,}")
 
-people = [{"name": "Alice", "age": 25}, {"name": "Bob", "age": 30}, {"name": "Charlie", "age": 22}]
-sorted_people = sorted(people, key=lambda p: p["age"])
-print(f"sorted by age: {[p['name'] for p in sorted_people]}")
+products = [
+    {"name": "Laptop Pro", "price": 35000},
+    {"name": "Wireless Mouse", "price": 650},
+    {"name": "Standing Desk", "price": 8500},
+]
+cheapest_first = sorted(products, key=lambda p: p["price"])
+print(f"cheapest first: {[p['name'] for p in cheapest_first]}")
 
 # scope — local vs global variables
 print("\n--- Scope ---")
-global_var = "I am global"
+STORE_NAME = "TechData Store"     # global
 
-def show_scope():
-    local_var = "I am local"
-    print(f"  Inside: global_var='{global_var}', local_var='{local_var}'")
+def make_label(sku):
+    prefix = "SKU"                # local to this function
+    print(f"  {STORE_NAME} | {prefix}-{sku}")
 
-show_scope()
-print(f"Outside: global_var='{global_var}'")
-# local_var is not accessible here
+make_label("P001")
+print(f"Outside: STORE_NAME='{STORE_NAME}'")
+# 'prefix' is not accessible here

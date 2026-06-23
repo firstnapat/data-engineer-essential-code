@@ -1,34 +1,35 @@
-# integer
+# integer — counts: stock on hand, quantity ordered
 print("--- Integer ---")
-count = 42
-big_number = 1_000_000    # underscores for readability
-print(f"count={count}, big_number={big_number}, type={type(count)}")
+stock = 50
+warehouse_capacity = 1_000_000    # underscores for readability
+print(f"stock={stock}, warehouse_capacity={warehouse_capacity}, type={type(stock)}")
 
-# float
+# float — money: prices, revenue
 print("\n--- Float ---")
-price = 99.99
-scientific = 1.5e3        # 1500.0
-print(f"price={price}, scientific={scientific}, type={type(price)}")
+unit_price = 35000.50
+bulk_threshold = 1.5e3            # 1500.0 — order value to qualify for bulk pricing
+print(f"unit_price={unit_price}, bulk_threshold={bulk_threshold}, type={type(unit_price)}")
 
-# string — common methods
+# string — product/order text + common methods
 print("\n--- String ---")
-message = "Hello, Data Engineer!"
-print(f"value:   {message}")
-print(f"upper:   {message.upper()}")
-print(f"slice:   {message[0:5]}")
-print(f"replace: {message.replace('Hello', 'Hi')}")
+product = "Laptop Pro - Electronics"
+print(f"value:   {product}")
+print(f"upper:   {product.upper()}")
+print(f"slice:   {product[0:10]}")
+print(f"replace: {product.replace('Pro', 'Air')}")
 print(f"split:   {'Bangkok,Chiang Mai,Phuket'.split(',')}")
-print(f"strip:   {'  spaces  '.strip()!r}")
-print(f"len:     {len(message)}")
+print(f"strip:   {'  P001  '.strip()!r}")
+print(f"len:     {len(product)}")
 
-# boolean — truthy / falsy values
+# boolean — order flags, stock availability
 print("\n--- Boolean ---")
-is_active = True
-print(f"bool values — 0:{bool(0)}, 1:{bool(1)}, '':{bool('')}, 'hi':{bool('hi')}, []:{bool([])}, None:{bool(None)}")
+in_stock = stock > 0
+print(f"in_stock = stock > 0 -> {in_stock}")
+print(f"bool — 0:{bool(0)}, 50:{bool(50)}, '':{bool('')}, 'P001':{bool('P001')}, []:{bool([])}, None:{bool(None)}")
 
-# type conversion (casting)
+# type conversion (casting) — raw CSV/JSON fields arrive as strings
 print("\n--- Type Conversion ---")
-print(f"int('123'):   {int('123')}")
-print(f"float('3.14'):{float('3.14')}")
-print(f"str(456):     {str(456)}")
-print(f"bool(0):      {bool(0)}")
+print(f"int('50'):       {int('50')}     (quantity from a CSV cell)")
+print(f"float('35000'):  {float('35000')}  (price from a CSV cell)")
+print(f"str(105000):     {str(105000)!r}   (revenue back to text)")
+print(f"bool(0):         {bool(0)}    (0 stock -> not available)")

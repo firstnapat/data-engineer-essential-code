@@ -1,54 +1,55 @@
-# iterating a list
+# iterating a list — order line items
 print("--- Iterating a List ---")
-fruits = ["apple", "banana", "cherry", "date"]
-for fruit in fruits:
-    print(f"  {fruit}")
+cart = ["Laptop Pro", "Wireless Mouse", "Monitor 27in", "Webcam"]
+for item in cart:
+    print(f"  {item}")
 
 # range() — start, stop, step
 print("\n--- range() ---")
-for i in range(5):
-    print(i, end=" ")
+for day in range(5):
+    print(f"Day{day}", end="  ")
 print()
-for i in range(1, 11, 2):   # start, stop, step
-    print(i, end=" ")
+for sku_num in range(1, 11, 2):    # P001, P003, ...
+    print(f"P{sku_num:03d}", end=" ")
 print()
-for i in range(10, 0, -2):  # countdown
-    print(i, end=" ")
+for countdown in range(3, 0, -1):  # stock countdown
+    print(countdown, end=" ")
 print()
 
-# enumerate() — index + value
+# enumerate() — index + value (line numbers on an invoice)
 print("\n--- enumerate() ---")
-colors = ["red", "green", "blue"]
-for index, color in enumerate(colors):
-    print(f"  [{index}] {color}")
+items = ["Laptop Pro", "Wireless Mouse", "Webcam"]
+for line_no, item in enumerate(items, start=1):
+    print(f"  Line {line_no}: {item}")
 
-# zip() — loop over two lists together
+# zip() — loop over parallel lists (product + quantity)
 print("\n--- zip() ---")
-names = ["Alice", "Bob", "Charlie"]
-scores = [95, 87, 92]
-for name, score in zip(names, scores):
-    print(f"  {name}: {score}")
+products = ["Laptop Pro", "Wireless Mouse", "Webcam"]
+quantities = [3, 15, 5]
+for product, qty in zip(products, quantities):
+    print(f"  {product}: {qty} units")
 
-# iterating a dictionary
+# iterating a dictionary — one product record
 print("\n--- Iterating a Dictionary ---")
-person = {"name": "Alice", "age": 25, "city": "Bangkok"}
-for key, value in person.items():
-    print(f"  {key}: {value}")
+product = {"sku": "P001", "name": "Laptop Pro", "stock": 50}
+for field, value in product.items():
+    print(f"  {field}: {value}")
 
-# break and continue
+# break and continue — scan stock, skip empties, stop at a full bin
 print("\n--- break and continue ---")
-for i in range(10):
-    if i == 3:
-        continue    # skip 3
-    if i == 7:
-        break       # stop at 7
-    print(i, end=" ")
-print()
+stock_levels = [50, 0, 25, 0, 100]
+for i, level in enumerate(stock_levels):
+    if level == 0:
+        continue            # skip out-of-stock items
+    if level >= 100:
+        print(f"  P{i:03d}: {level} (bin full, stop scan)")
+        break
+    print(f"  P{i:03d}: {level} ok")
 
-# nested loop
-print("\n--- Nested Loop (matrix) ---")
-matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-for row in matrix:
+# nested loop — stock grid: warehouses x products
+print("\n--- Nested Loop (warehouse x product grid) ---")
+grid = [[50, 200, 30], [12, 80, 0], [5, 150, 60]]
+for w, row in enumerate(grid):
     for val in row:
-        print(f"{val:3}", end="")
-    print()
+        print(f"{val:4}", end="")
+    print(f"   <- warehouse {w}")

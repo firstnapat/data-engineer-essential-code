@@ -1,46 +1,48 @@
-# basic list comprehension
+# basic list comprehension — apply 7% VAT to a price list
 print("--- Basic List Comprehension ---")
-squares = [i ** 2 for i in range(1, 6)]
-print(f"squares: {squares}")
+prices = [650, 2500, 8500, 35000]
+with_vat = [round(p * 1.07, 2) for p in prices]
+print(f"prices:   {prices}")
+print(f"with VAT: {with_vat}")
 
-# list comprehension with a filter (if)
+# with a filter (if) — only high-value line items
 print("\n--- With Filter ---")
-numbers = list(range(1, 11))
-evens = [n for n in numbers if n % 2 == 0]
-odd_squares = [n ** 2 for n in numbers if n % 2 != 0]
-print(f"evens:       {evens}")
-print(f"odd squares: {odd_squares}")
+revenues = [105000, 9750, 17000, 60000, 450, 9000]
+big_orders = [r for r in revenues if r >= 10000]
+discounted = [r * 0.9 for r in revenues if r >= 50000]
+print(f"big orders (>=10k): {big_orders}")
+print(f"discount on >=50k:  {discounted}")
 
-# transforming strings
+# transforming strings — normalise messy product names
 print("\n--- String Operations ---")
-words = ["  hello  ", "  world  ", "  python  "]
-cleaned = [w.strip().upper() for w in words]
-print(f"cleaned: {cleaned}")
+raw_names = ["  laptop pro ", " wireless MOUSE ", "  webcam  "]
+clean = [n.strip().title() for n in raw_names]
+print(f"clean: {clean}")
 
-fruits = ["apple", "banana", "cherry", "avocado", "blueberry"]
-a_fruits = [f for f in fruits if f.startswith("a")]
-print(f"starts with 'a': {a_fruits}")
+products = ["Laptop Pro", "Wireless Mouse", "Webcam", "Water Bottle", "Wifi Router"]
+w_products = [p for p in products if p.startswith("W")]
+print(f"starts with 'W': {w_products}")
 
-# nested list comprehension (flatten / transpose)
+# nested list comprehension — flatten/transpose a warehouse stock grid
 print("\n--- Nested List Comprehension ---")
-matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-flat = [val for row in matrix for val in row]
-transposed = [[row[i] for row in matrix] for i in range(3)]
-print(f"flattened:   {flat}")
-print(f"transposed:  {transposed}")
+grid = [[50, 200, 30], [12, 80, 0], [5, 150, 60]]
+flat = [val for row in grid for val in row]
+columns = [[row[i] for row in grid] for i in range(3)]
+print(f"flattened:         {flat}")
+print(f"columns (per SKU): {columns}")
 
-# dictionary comprehension
+# dictionary comprehension — SKU -> price lookup
 print("\n--- Dictionary Comprehension ---")
-names = ["alice", "bob", "charlie"]
-name_lengths = {name: len(name) for name in names}
-print(f"name lengths: {name_lengths}")
+skus = ["P001", "P002", "P006"]
+unit_prices = [35000, 650, 8500]
+price_book = {sku: price for sku, price in zip(skus, unit_prices)}
+print(f"price book: {price_book}")
 
-prices = {"apple": 30, "banana": 15, "cherry": 80}
-expensive = {k: v for k, v in prices.items() if v > 20}
-print(f"expensive: {expensive}")
+expensive = {sku: p for sku, p in price_book.items() if p > 1000}
+print(f"expensive (>1000): {expensive}")
 
-# set comprehension
+# set comprehension — distinct categories from order rows
 print("\n--- Set Comprehension ---")
-nums = [1, 2, 2, 3, 3, 3, 4]
-unique_squares = {n ** 2 for n in nums}
-print(f"unique squares: {unique_squares}")
+order_categories = ["Electronics", "Electronics", "Furniture", "Clothing", "Furniture"]
+distinct = {c for c in order_categories}
+print(f"distinct categories: {distinct}")
