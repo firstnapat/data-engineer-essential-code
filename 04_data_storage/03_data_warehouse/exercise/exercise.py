@@ -1,5 +1,5 @@
 """
-Exercise: Data Warehouse — Multi-table Load with ClickHouse
+Exercise: Data Warehouse — Load Data into ClickHouse
 Practice the concepts from clickhouse_example.py (column-oriented OLAP).
 Run: uv run 04_data_storage/03_data_warehouse/exercise/exercise.py
 
@@ -7,14 +7,15 @@ Setup (Docker — start ClickHouse first):
   docker run -d --name de-clickhouse \\
     -p 8123:8123 -p 9009:9000 \\
     -v $(pwd)/datasets/raw:/var/lib/clickhouse/user_files \\
+    -e CLICKHOUSE_PASSWORD=clickhouse \\
     clickhouse/clickhouse-server
 
 Configure .env:
   CLICKHOUSE_HOST=localhost
-  CLICKHOUSE_PORT=9009
+  CLICKHOUSE_PORT=8123
   CLICKHOUSE_DB=default
   CLICKHOUSE_USER=default
-  CLICKHOUSE_PASSWORD=
+  CLICKHOUSE_PASSWORD=clickhouse
 
 Datasets: datasets/raw/ — see datasets/er_diagram.md for schema.
 """
@@ -31,7 +32,8 @@ try:
     # Task 1: Connect to ClickHouse
     # =========================================================================
     print("--- Task 1: Connect to ClickHouse ---")
-    # TODO: Create a ClickHouse client using settings from .env.
+    # TODO: Create a ClickHouse client using clickhouse_connect.get_client(...)
+    #       Load host/port/user/password from .env.
     import clickhouse_connect
 
     CH_HOST     = os.getenv("CLICKHOUSE_HOST", "localhost")
@@ -44,54 +46,36 @@ try:
     print("[dw] Connected to ClickHouse")
 
     # =========================================================================
-    # Task 2: Create all 5 tables
+    # Task 2: Create tables for all 5 datasets
     # =========================================================================
     print("\n--- Task 2: Create tables ---")
     # TODO: Create tables for users, addresses, orders, order_items, transports.
-    #       Use ENGINE = MergeTree(). See datasets/er_diagram.md for schema.
-    #       Use client.command(sql) for DDL statements.
+    #       See datasets/er_diagram.md for the schema of each table.
+    #       Use client.command(sql) for DDL.
 
-    print("[dw] All tables ready")
+    print("[dw] Tables ready")
 
     # =========================================================================
-    # Task 3: Insert data from CSV into each table
+    # Task 3: Insert data from CSV files
     # =========================================================================
     print("\n--- Task 3: Insert data ---")
-    # TODO: Read each CSV from datasets/raw/ and insert into its table.
-    #       Use client.insert(table, data, column_names=[...]) for inserts.
-    #       Use client.query_df(sql) for SELECT queries.
+    # TODO: Load each dataset from datasets/raw/*.csv and insert into its table.
+    #       Use client.insert(table, rows, column_names=[...])
+
+    print("[dw] Data inserted")
 
     # =========================================================================
-    # Task 4: Revenue by order status
+    # Task 4: Run analytics queries
     # =========================================================================
-    print("\n--- Task 4: Revenue by order status ---")
-    # TODO: Query total revenue and order count grouped by status.
-
-    REVENUE_SQL = """
-    -- TODO: Write your query here
-    """
-
-    # data, cols = client.execute(REVENUE_SQL, with_column_types=True)
-    # print(pd.DataFrame(data, columns=[c[0] for c in cols]))
-
-    # =========================================================================
-    # Task 5: Top 5 users by total spend
-    # =========================================================================
-    print("\n--- Task 5: Top 5 users by total spend ---")
-    # TODO: Join orders and users to find the top 5 spenders.
-
-    TOP_USERS_SQL = """
-    -- TODO: Write your query here
-    """
-
-    # data, cols = client.execute(TOP_USERS_SQL, with_column_types=True)
-    # print(pd.DataFrame(data, columns=[c[0] for c in cols]))
+    print("\n--- Task 4: Analytics ---")
+    # TODO: Write at least 2 analytical queries that JOIN across tables.
+    #       Use client.query_df(sql) to return results as a DataFrame.
+    #       Example ideas: top users by total spend, orders by status + region.
 
     # --- Verification ---
     # Uncomment after completing all tasks:
-    # for table, expected in [("users", 65), ("orders", 108), ("order_items", 198)]:
-    #     count = client.execute(f"SELECT count() FROM {table}")[0][0]
-    #     assert count == expected, f"{table}: expected {expected}, got {count}"
+    # assert client.query("SELECT count() FROM users").result_rows[0][0] == 80
+    # assert client.query("SELECT count() FROM orders").result_rows[0][0] == 108
     # print("\n✅ All verifications passed!")
 
 except Exception as e:
@@ -100,4 +84,5 @@ except Exception as e:
     print("  docker run -d --name de-clickhouse \\")
     print("    -p 8123:8123 -p 9009:9000 \\")
     print("    -v $(pwd)/datasets/raw:/var/lib/clickhouse/user_files \\")
+    print("    -e CLICKHOUSE_PASSWORD=clickhouse \\")
     print("    clickhouse/clickhouse-server")
