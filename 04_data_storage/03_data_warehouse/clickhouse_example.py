@@ -23,42 +23,45 @@ CH_PASSWORD = os.getenv("CLICKHOUSE_PASSWORD", "")
 DATASETS = os.path.join(os.path.dirname(__file__), "../../datasets")
 
 CREATE_TABLE_SQL = """
-CREATE TABLE IF NOT EXISTS sales (
-    sale_date   Date,
-    product     String,
+CREATE TABLE IF NOT EXISTS products (
+    product_id  UInt32,
+    name        String,
     category    LowCardinality(String),
-    quantity    UInt32,
+    brand       LowCardinality(String),
     unit_price  Float32,
-    revenue     Float32,
-    region      LowCardinality(String)
+    stock_qty   UInt32
 )
 ENGINE = MergeTree()
-ORDER BY (sale_date, category, region)
+ORDER BY (category, brand, product_id)
 """
 
 ANALYTICS_QUERIES = {
-    "Revenue by Category": """
+    "Products by Category": """
         SELECT category,
-               sum(revenue)     AS total_revenue,
-               count()          AS transactions,
-               avg(revenue)     AS avg_revenue
-        FROM sales
+               count()            AS total_products,
+               avg(unit_price)    AS avg_price,
+               sum(stock_qty)     AS total_stock
+        FROM products
         GROUP BY category
-        ORDER BY total_revenue DESC
+        ORDER BY total_products DESC
     """,
-    "Monthly Trend": """
-        SELECT toYYYYMM(sale_date)  AS month,
-               sum(revenue)         AS total_revenue
-        FROM sales
-        GROUP BY month
-        ORDER BY month
-    """,
-    "Top 5 Products": """
-        SELECT product, sum(revenue) AS total_revenue
-        FROM sales
-        GROUP BY product
-        ORDER BY total_revenue DESC
+    "Top Brands by Stock Value": """
+        SELECT brand,
+               sum(unit_price * stock_qty) AS stock_value,
+               count()                     AS num_products
+        FROM products
+        GROUP BY brand
+        ORDER BY stock_value DESC
         LIMIT 5
+    """,
+    "Price Range by Category": """
+        SELECT category,
+               min(unit_price) AS min_price,
+               max(unit_price) AS max_price,
+               avg(unit_price) AS avg_price
+        FROM products
+        GROUP BY category
+        ORDER BY avg_price DESC
     """,
 }
 
@@ -73,17 +76,17 @@ def get_client():
 
 def setup_table(client) -> None:
     client.execute(CREATE_TABLE_SQL)
-    client.execute("TRUNCATE TABLE IF EXISTS sales")
-    print("[dw] Table 'sales' ready")
+    client.execute("TRUNCATE TABLE IF EXISTS products")
+    print("[dw] Table 'products' ready")
 
 
 def insert_dataframe(client, df: pd.DataFrame) -> None:
     records = df.to_dict("records")
     client.execute(
-        "INSERT INTO sales (sale_date, product, category, quantity, unit_price, revenue, region) VALUES",
+        "INSERT INTO products (product_id, name, category, brand, unit_price, stock_qty) VALUES",
         [
-            (r["date"], r["product"], r["category"],
-             int(r["quantity"]), float(r["unit_price"]), float(r["revenue"]), r["region"])
+            (int(r["product_id"]), r["name"], r["category"],
+             r["brand"], float(r["unit_price"]), int(r["stock_qty"]))
             for r in records
         ],
     )
@@ -93,7 +96,7 @@ def insert_dataframe(client, df: pd.DataFrame) -> None:
 if __name__ == "__main__":
     try:
         client = get_client()
-        df = pd.read_csv(os.path.join(DATASETS, "sales.csv"), parse_dates=["date"])
+        df = pd.read_csv(os.path.join(DATASETS, "raw/products_raw.csv"))
 
         setup_table(client)
         insert_dataframe(client, df)
