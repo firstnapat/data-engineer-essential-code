@@ -12,15 +12,18 @@ Configure .env with S3_* variables from .env.example.
 """
 import os
 import io
+import json
 import pandas as pd
-from dotenv import load_dotenv
 
-load_dotenv()
+CREDENTIALS_PATH = os.path.join(os.path.dirname(__file__), "credentials.json")
 
-S3_ENDPOINT = os.getenv("S3_ENDPOINT_URL", "http://localhost:9000")
-S3_ACCESS   = os.getenv("S3_ACCESS_KEY", "minioadmin")
-S3_SECRET   = os.getenv("S3_SECRET_KEY", "minioadmin")
-BUCKET      = os.getenv("S3_BUCKET", "data-lake")
+with open(CREDENTIALS_PATH) as f:
+    _creds = json.load(f)
+
+S3_ENDPOINT = f"http://{_creds['url'].replace('9001', '9000')}"
+S3_ACCESS   = _creds["accessKey"]
+S3_SECRET   = _creds["secretKey"]
+BUCKET      = "data-lake"
 
 DATASETS = os.path.join(os.path.dirname(__file__), "../../datasets")
 
@@ -68,20 +71,20 @@ if __name__ == "__main__":
         s3 = get_s3_client()
         ensure_bucket(s3, BUCKET)
 
-        df = pd.read_csv(os.path.join(DATASETS, "sales.csv"), parse_dates=["date"])
+        df = pd.read_csv(os.path.join(DATASETS, "raw/products_raw.csv"))
 
-        # Partition by month (common pattern in data lakes)
-        for month, group in df.groupby(df["date"].dt.strftime("%Y-%m")):
-            key = f"raw/sales/month={month}/data.parquet"
+        # Partition by category (common pattern in data lakes)
+        for category, group in df.groupby("category"):
+            key = f"raw/products/category={category}/data.parquet"
             upload_dataframe_as_parquet(s3, group, BUCKET, key)
 
         print("\n[lake] Objects in bucket:")
-        for obj in list_objects(s3, BUCKET, prefix="raw/sales/"):
+        for obj in list_objects(s3, BUCKET, prefix="raw/products/"):
             print(f"  s3://{BUCKET}/{obj}")
 
         # Read back one partition
-        df_back = download_dataframe(s3, BUCKET, "raw/sales/month=2024-01/data.parquet")
-        print(f"\n[lake] Read back Jan 2024: {len(df_back)} rows")
+        df_back = download_dataframe(s3, BUCKET, "raw/products/category=Electronics/data.parquet")
+        print(f"\n[lake] Read back Electronics: {len(df_back)} rows")
 
     except Exception as e:
         print(f"Connection failed: {e}")
