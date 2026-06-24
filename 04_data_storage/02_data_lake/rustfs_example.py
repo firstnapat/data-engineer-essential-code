@@ -2,17 +2,22 @@
 Data Lake storage using RustFS (S3-compatible object storage).
 RustFS exposes the same API as AWS S3, so we use boto3.
 
+Demonstrates the medallion architecture with products_raw.csv:
+  Bronze — raw data as-is (CSV → Parquet, no changes)
+  Silver — cleaned (deduplicated, category standardized)
+  Gold   — aggregated (category summary)
+
 Setup (Docker):
-  docker run -p 9000:9000 -p 9001:9001 \\
-    -e MINIO_ROOT_USER=minioadmin \\
-    -e MINIO_ROOT_PASSWORD=minioadmin \\
+  docker run -d --name de-rustfs \\
+    -p 9000:9000 -p 9001:9001 \\
     quay.io/minio/minio server /data --console-address ':9001'
 
-Configure .env with S3_* variables from .env.example.
+Authentication: place credentials.json (downloaded from RustFS webui) next to this file.
 """
 import os
 import io
 import json
+from datetime import date
 import pandas as pd
 
 CREDENTIALS_PATH = os.path.join(os.path.dirname(__file__), "credentials.json")
@@ -24,6 +29,7 @@ S3_ENDPOINT = f"http://{_creds['url'].replace('9001', '9000')}"
 S3_ACCESS   = _creds["accessKey"]
 S3_SECRET   = _creds["secretKey"]
 BUCKET      = "data-lake"
+TODAY       = date.today().isoformat()
 
 DATASETS = os.path.join(os.path.dirname(__file__), "../../datasets")
 
@@ -71,21 +77,49 @@ if __name__ == "__main__":
         s3 = get_s3_client()
         ensure_bucket(s3, BUCKET)
 
-        df = pd.read_csv(os.path.join(DATASETS, "raw/products_raw.csv"))
+        df_raw = pd.read_csv(os.path.join(DATASETS, "raw/products_raw.csv"))
 
-        # Partition by category (common pattern in data lakes)
-        for category, group in df.groupby("category"):
-            key = f"raw/products/category={category}/data.parquet"
-            upload_dataframe_as_parquet(s3, group, BUCKET, key)
+        # ------------------------------------------------------------------
+        # Bronze — raw data as-is, partitioned by ingestion date
+        # ------------------------------------------------------------------
+        upload_dataframe_as_parquet(
+            s3, df_raw, BUCKET,
+            f"bronze/products/{TODAY}/data.parquet",
+        )
 
-        print("\n[lake] Objects in bucket:")
-        for obj in list_objects(s3, BUCKET, prefix="raw/products/"):
+        # ------------------------------------------------------------------
+        # Silver — deduplicated + category standardized to Title Case
+        # ------------------------------------------------------------------
+        df_silver = df_raw.copy()
+        df_silver["category"] = df_silver["category"].str.title()
+        df_silver = df_silver.drop_duplicates(subset=["product_id"])
+        upload_dataframe_as_parquet(
+            s3, df_silver, BUCKET,
+            f"silver/products/{TODAY}/data.parquet",
+        )
+
+        # ------------------------------------------------------------------
+        # Gold — category summary (count, avg price, total stock)
+        # ------------------------------------------------------------------
+        df_gold = (
+            df_silver.groupby("category")
+            .agg(
+                total_products=("product_id", "count"),
+                avg_price=("unit_price", "mean"),
+                total_stock=("stock_qty", "sum"),
+            )
+            .reset_index()
+            .round(2)
+        )
+        upload_dataframe_as_parquet(
+            s3, df_gold, BUCKET,
+            f"gold/products/{TODAY}/category_summary.parquet",
+        )
+
+        print("\n[lake] All objects in bucket:")
+        for obj in list_objects(s3, BUCKET):
             print(f"  s3://{BUCKET}/{obj}")
-
-        # Read back one partition
-        df_back = download_dataframe(s3, BUCKET, "raw/products/category=Electronics/data.parquet")
-        print(f"\n[lake] Read back Electronics: {len(df_back)} rows")
 
     except Exception as e:
         print(f"Connection failed: {e}")
-        print("Start RustFS/MinIO and check your .env settings.")
+        print("Start RustFS/MinIO and check credentials.json.")
