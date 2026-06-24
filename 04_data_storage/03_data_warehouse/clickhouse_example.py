@@ -4,7 +4,11 @@ ClickHouse is optimized for analytical queries (OLAP) — column-oriented,
 compressed, extremely fast aggregations.
 
 Setup (Docker):
-  docker run -d --name clickhouse -p 9000:9000 -p 8123:8123 clickhouse/clickhouse-server
+  docker run -d --name de-clickhouse \\
+    -p 8123:8123 -p 9009:9000 \\
+    -v $(pwd)/datasets/raw:/var/lib/clickhouse/user_files \\
+    -e CLICKHOUSE_PASSWORD=clickhouse \\
+    clickhouse/clickhouse-server
 
 Configure .env with CLICKHOUSE_* variables from .env.example.
 """
@@ -15,10 +19,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 CH_HOST     = os.getenv("CLICKHOUSE_HOST", "localhost")
-CH_PORT     = int(os.getenv("CLICKHOUSE_PORT", "9000"))
+CH_PORT     = int(os.getenv("CLICKHOUSE_PORT", "8123"))
 CH_DB       = os.getenv("CLICKHOUSE_DB", "default")
 CH_USER     = os.getenv("CLICKHOUSE_USER", "default")
-CH_PASSWORD = os.getenv("CLICKHOUSE_PASSWORD", "")
+CH_PASSWORD = os.getenv("CLICKHOUSE_PASSWORD", "clickhouse")
 
 DATASETS = os.path.join(os.path.dirname(__file__), "../../datasets")
 
@@ -67,30 +71,26 @@ ANALYTICS_QUERIES = {
 
 
 def get_client():
-    from clickhouse_driver import Client
-    return Client(
+    import clickhouse_connect
+    return clickhouse_connect.get_client(
         host=CH_HOST, port=CH_PORT, database=CH_DB,
-        user=CH_USER, password=CH_PASSWORD,
+        username=CH_USER, password=CH_PASSWORD,
     )
 
 
 def setup_table(client) -> None:
-    client.execute(CREATE_TABLE_SQL)
-    client.execute("TRUNCATE TABLE IF EXISTS products")
+    client.command(CREATE_TABLE_SQL)
+    client.command("TRUNCATE TABLE IF EXISTS products")
     print("[dw] Table 'products' ready")
 
 
 def insert_dataframe(client, df: pd.DataFrame) -> None:
-    records = df.to_dict("records")
-    client.execute(
-        "INSERT INTO products (product_id, name, category, brand, unit_price, stock_qty) VALUES",
-        [
-            (int(r["product_id"]), r["name"], r["category"],
-             r["brand"], float(r["unit_price"]), int(r["stock_qty"]))
-            for r in records
-        ],
+    client.insert(
+        "products",
+        df[["product_id", "name", "category", "brand", "unit_price", "stock_qty"]].values.tolist(),
+        column_names=["product_id", "name", "category", "brand", "unit_price", "stock_qty"],
     )
-    print(f"[dw] Inserted {len(records)} rows")
+    print(f"[dw] Inserted {len(df)} rows")
 
 
 if __name__ == "__main__":
@@ -103,11 +103,7 @@ if __name__ == "__main__":
 
         for label, sql in ANALYTICS_QUERIES.items():
             print(f"\n--- {label} ---")
-            rows = client.execute(sql, with_column_types=True)
-            data, cols = rows
-            col_names = [c[0] for c in cols]
-            result = pd.DataFrame(data, columns=col_names)
-            print(result)
+            print(client.query_df(sql))
 
     except Exception as e:
         print(f"ClickHouse connection failed: {e}")

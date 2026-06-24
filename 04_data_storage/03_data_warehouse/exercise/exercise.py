@@ -32,15 +32,15 @@ try:
     # =========================================================================
     print("--- Task 1: Connect to ClickHouse ---")
     # TODO: Create a ClickHouse client using settings from .env.
-    from clickhouse_driver import Client
+    import clickhouse_connect
 
     CH_HOST     = os.getenv("CLICKHOUSE_HOST", "localhost")
-    CH_PORT     = int(os.getenv("CLICKHOUSE_PORT", "9009"))
+    CH_PORT     = int(os.getenv("CLICKHOUSE_PORT", "8123"))
     CH_DB       = os.getenv("CLICKHOUSE_DB", "default")
     CH_USER     = os.getenv("CLICKHOUSE_USER", "default")
-    CH_PASSWORD = os.getenv("CLICKHOUSE_PASSWORD", "")
+    CH_PASSWORD = os.getenv("CLICKHOUSE_PASSWORD", "clickhouse")
 
-    client = None  # Replace with your Client(...) call
+    client = None  # Replace with clickhouse_connect.get_client(...)
     print("[dw] Connected to ClickHouse")
 
     # =========================================================================
@@ -49,6 +49,7 @@ try:
     print("\n--- Task 2: Create tables ---")
     # TODO: Create tables for users, addresses, orders, order_items, transports.
     #       Use ENGINE = MergeTree(). See datasets/er_diagram.md for schema.
+    #       Use client.command(sql) for DDL statements.
 
     print("[dw] All tables ready")
 
@@ -57,6 +58,8 @@ try:
     # =========================================================================
     print("\n--- Task 3: Insert data ---")
     # TODO: Read each CSV from datasets/raw/ and insert into its table.
+    #       Use client.insert(table, data, column_names=[...]) for inserts.
+    #       Use client.query_df(sql) for SELECT queries.
 
     # =========================================================================
     # Task 4: Revenue by order status
