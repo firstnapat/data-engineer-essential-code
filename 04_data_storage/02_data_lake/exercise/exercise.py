@@ -1,105 +1,78 @@
 """
-Exercise: Data Lake Storage — Uploading Products as Parquet to S3
-Practice the concepts from rustfs_example.py (S3-compatible object storage).
+Exercise: Data Lake — Bronze / Silver / Gold with RustFS
+Practice the medallion architecture from rustfs_example.py.
 Run: uv run 04_data_storage/02_data_lake/exercise/exercise.py
 
-Setup (Docker — start RustFS/MinIO first):
-  docker run -p 9000:9000 -p 9001:9001 \\
-    -e MINIO_ROOT_USER=minioadmin \\
-    -e MINIO_ROOT_PASSWORD=minioadmin \\
+Setup (Docker — start RustFS first):
+  docker run -d --name de-rustfs \\
+    -p 9000:9000 -p 9001:9001 \\
     quay.io/minio/minio server /data --console-address ':9001'
 
-Configure .env with S3_ENDPOINT_URL, S3_ACCESS_KEY, S3_SECRET_KEY.
+Datasets: datasets/raw/ — see datasets/er_diagram.md for schema.
 """
 import os
 import io
-import json
+from datetime import date
 import pandas as pd
-from dotenv import load_dotenv
-
-load_dotenv()
 
 DATASETS = os.path.join(os.path.dirname(__file__), "../../../datasets")
+BUCKET   = "exercise-lake"
+TODAY    = date.today().isoformat()
 
 try:
     # =========================================================================
-    # Task 1: Create a boto3 S3 client
+    # Task 1: Create S3 client
     # =========================================================================
     print("--- Task 1: Create S3 client ---")
-    # TODO: Import boto3 and create an S3 client using:
-    #   - endpoint_url  = os.getenv("S3_ENDPOINT_URL", "http://localhost:9000")
-    #   - aws_access_key_id = os.getenv("S3_ACCESS_KEY", "minioadmin")
-    #   - aws_secret_access_key = os.getenv("S3_SECRET_KEY", "minioadmin")
-    #   - region_name = "us-east-1"
-    # Store the client in a variable called `s3`.
-    # Hint: Use boto3.client("s3", endpoint_url=..., ...)
-    import boto3
+    # TODO: Create a boto3 S3 client pointing to local RustFS (localhost:9000).
 
-    s3 = boto3.client(
-        "s3",
-        endpoint_url=os.getenv("S3_ENDPOINT_URL", "http://localhost:9000"),
-        aws_access_key_id=os.getenv("S3_ACCESS_KEY", "minioadmin"),
-        aws_secret_access_key=os.getenv("S3_SECRET_KEY", "minioadmin"),
-        region_name="us-east-1",
-    )
-
+    s3 = None  # Replace with your boto3.client(...) call
     print("[lake] S3 client created")
 
     # =========================================================================
-    # Task 2: Create a bucket called 'exercise-lake'
+    # Task 2: Ensure bucket exists
     # =========================================================================
-    print("\n--- Task 2: Create bucket ---")
-    BUCKET = "exercise-lake"
-    existing_buckets = [b["Name"] for b in s3.list_buckets().get("Buckets", [])]
-    if BUCKET not in existing_buckets:
-        s3.create_bucket(Bucket=BUCKET)
+    print(f"\n--- Task 2: Ensure bucket '{BUCKET}' exists ---")
+    # TODO: Create the bucket if it doesn't exist.
 
     print(f"[lake] Bucket '{BUCKET}' ready")
 
     # =========================================================================
-    # Task 3: Read products.json, flatten, and upload as Parquet
+    # Task 3: Bronze — upload all 5 datasets as-is (CSV → Parquet)
     # =========================================================================
-    print("\n--- Task 3: Upload products as Parquet ---")
-    with open(os.path.join(DATASETS, "products.json"), "r") as f:
-        data = json.load(f)
-    df_products = pd.json_normalize(data, record_path="products")
-
-    buffer = io.BytesIO()
-    df_products.to_parquet(buffer, index=False, engine="pyarrow")
-    buffer.seek(0)
-    s3.put_object(Bucket=BUCKET, Key="raw/products/data.parquet", Body=buffer.getvalue())
-
-    print(f"[lake] Uploaded {len(df_products)} products -> s3://{BUCKET}/raw/products/data.parquet")
+    print("\n--- Task 3: Bronze layer ---")
+    # TODO: Read each CSV and upload as Parquet to bronze/{name}/{TODAY}/data.parquet
+    #       Datasets: users, addresses, orders, order_items, transports
 
     # =========================================================================
-    # Task 4: List all objects in the bucket
+    # Task 4: Silver — clean each dataset and upload
     # =========================================================================
-    print("\n--- Task 4: List objects ---")
-    resp = s3.list_objects_v2(Bucket=BUCKET)
-    keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    for key in keys:
-        print(f"  Key: {key}")
+    print("\n--- Task 4: Silver layer ---")
+    # TODO: Inspect each dataset, identify the issues, clean them,
+    #       and upload to silver/{name}/{TODAY}/data.parquet
 
     # =========================================================================
-    # Task 5: Download and read back the Parquet file
+    # Task 5: Gold — aggregate and upload
     # =========================================================================
-    print("\n--- Task 5: Download and verify ---")
-    resp = s3.get_object(Bucket=BUCKET, Key="raw/products/data.parquet")
-    df_back = pd.read_parquet(io.BytesIO(resp["Body"].read()))
+    print("\n--- Task 5: Gold layer ---")
+    # TODO: Aggregate the cleaned orders by status (count, total revenue)
+    #       and upload to gold/orders/{TODAY}/status_summary.parquet
 
-    print(f"[lake] Downloaded shape: {df_back.shape}")
-    print(df_back.head(3))
+    # =========================================================================
+    # Task 6: List all objects in the bucket
+    # =========================================================================
+    print("\n--- Task 6: List all objects ---")
+    # TODO: Print every object key in BUCKET.
 
     # --- Verification ---
-    assert df_back.shape[0] == 13, f"Expected 13 products, got {df_back.shape[0]}"
-    assert "category" in df_back.columns, "Missing 'category' column"
-    assert "unit_price" in df_back.columns, "Missing 'unit_price' column"
-    print("\n✅ All verifications passed!")
+    # Uncomment after completing all tasks:
+    # resp = s3.list_objects_v2(Bucket=BUCKET)
+    # keys = [obj["Key"] for obj in resp.get("Contents", [])]
+    # assert any("bronze/users" in k for k in keys),  "Missing bronze/users"
+    # assert any("silver/orders" in k for k in keys), "Missing silver/orders"
+    # assert any("gold/orders" in k for k in keys),   "Missing gold/orders"
+    # print("\n✅ All verifications passed!")
 
 except Exception as e:
     print(f"\n❌ Connection failed: {e}")
-    print("Make sure RustFS/MinIO is running. Start it with:")
-    print("  docker run -p 9000:9000 -p 9001:9001 \\")
-    print("    -e MINIO_ROOT_USER=minioadmin \\")
-    print("    -e MINIO_ROOT_PASSWORD=minioadmin \\")
-    print("    quay.io/minio/minio server /data --console-address ':9001'")
+    print("Make sure RustFS is running on localhost:9000.")

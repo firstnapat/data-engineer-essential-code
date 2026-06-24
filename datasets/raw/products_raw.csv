@@ -1,0 +1,34 @@
+product_id,name,category,brand,unit_price,stock_qty
+3001,iPhone 15 Pro,Electronics,Apple,42900.0,50
+3002,Samsung Galaxy S24,electronics,Samsung,35900.0,40
+3003,iPad Air 5,Electronics,Apple,21900.0,30
+3004,MacBook Air M2,Electronics,Apple,52900.0,20
+3005,Sony WH-1000XM5,Electronics,Sony,10900.0,60
+3006,Nike Air Max 270,Clothing,Nike,4500.0,80
+3007,Adidas Ultraboost 22,Clothing,Adidas,5200.0,70
+3008,Levi's 501 Jeans,Clothing,Levi's,1990.0,100
+3009,Uniqlo AIRism T-Shirt,Clothing,Uniqlo,390.0,200
+3010,H&M Slim Fit Chinos,clothing,H&M,890.0,150
+3011,Dyson V15 Vacuum,ELECTRONICS,Dyson,24900.0,15
+3012,Nescafe Gold 200g,Food,Nestle,320.0,300
+3013,Lay's Classic 75g,Food,PepsiCo,35.0,500
+3014,Meji Milk 1L,Food,Meji,52.0,400
+3015,Whey Protein 2kg,Sports,Optimum Nutrition,2900.0,45
+3016,Yoga Mat 6mm,Sports,Decathlon,590.0,80
+3017,Kettlebell 16kg,Sports,Rogue,1290.0,30
+3018,Python Crash Course,Books,No Starch Press,890.0,60
+3019,Atomic Habits,Books,Penguin,490.0,90
+3020,Data Engineering Book,Books,O'Reilly,1290.0,40
+3021,Cetaphil Face Wash,Beauty,Cetaphil,490.0,120
+3022,Sunscreen SPF50+,BEAUTY,Biore,289.0,150
+3023,Vitamin C Serum 30ml,Beauty,Some By Mi,650.0,80
+3024,Logitech MX Master 3,Electronics,Logitech,3900.0,55
+3025,"Dell 27"" Monitor",Electronics,Dell,8900.0,25
+3026,HDMI Cable 2m,Electronics,Ugreen,290.0,200
+3027,Running Shorts,Clothing,Nike,890.0,100
+3028,Basketball,Sports,Spalding,1490.0,35
+3029,Green Tea 50 bags,Food,Lipton,129.0,250
+3030,Collagen Powder 200g,Beauty,Meji,890.0,70
+3011,Dyson V15 Vacuum,ELECTRONICS,Dyson,24900.0,15
+3002,Samsung Galaxy S24,electronics,Samsung,35900.0,40
+3001,iPhone 15 Pro,Electronics,Apple,42900.0,50

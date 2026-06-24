@@ -45,6 +45,105 @@ uv run jupyter notebook 02_working_with_data/02_assignment/workshop_eda.ipynb
 
 The `00_bash_basics/` module needs no Python — work through it directly in a terminal (`cd 00_bash_basics` and follow its `README.md`).
 
+## Refactoring Loop to Functional Style (Map & Reduce)
+
+ประเด็นที่น่าสนใจและข้อดี-ข้อเสียในการเปลี่ยนจากโครงสร้างควบคุมการวนลูปแบบดั้งเดิมอย่าง `for` หรือ `while` ไปใช้ `map()`, `reduce()` ร่วมกับ `lambda` ใน Python เพื่อประมวลผลข้อมูลสไตล์ Functional Programming:
+
+### 1. ความกระชับของโค้ด (Conciseness)
+* **แบบเดิม (`for` loop):** มักต้องสร้างรายการว่างขึ้นมาก่อน แล้วค่อยใช้ `.append()` เพื่อเพิ่มข้อมูลทีละตัว
+  ```python
+  numbers = [1, 2, 3, 4]
+  squared = []
+  for x in numbers:
+      squared.append(x ** 2)
+  ```
+* **แบบใหม่ (`map` + `lambda`):** เขียนจบได้ในบรรทัดเดียว
+  ```python
+  squared = list(map(lambda x: x ** 2, numbers))
+  ```
+
+### 2. แนวคิดแบบ Functional Programming
+* **Declarative Style:** `map` บอกว่าเรา "ต้องการทำอะไร" (What to do) กับข้อมูลทุกตัว มากกว่าจะบอก "ขั้นตอนการทำงานทีละระดับ" (How to do) เหมือน `for`/`while`
+* **Immutability:** ลดการเปลี่ยนแปลงสถานะของตัวแปรระหว่างทาง (เช่น ตัวแปรนับรอบ หรือการเปลี่ยนค่าลิสต์ตรงๆ) ทำให้คาดเดาผลลัพธ์ของโค้ดได้ง่ายขึ้น
+
+### 3. ประสิทธิภาพ (Performance)
+* ใน Python ฟังก์ชัน `map()` ถูกเขียนด้วยภาษา C ซึ่งโดยทั่วไปจะทำงานได้เร็วกว่าลูป `for` ที่รันบนตัวแปลภาษา (Interpreter) ของ Python โดยตรง (อย่างไรก็ตาม ความเร็วที่เพิ่มขึ้นนี้อาจไม่มีนัยสำคัญหากฟังก์ชันใน `map` ซับซ้อนมาก)
+* **Lazy Evaluation:** `map()` ใน Python 3 จะส่งกลับเป็น iterator (ไม่ได้สร้าง list ใหม่ขึ้นมาในหน่วยความจำทันที) ทำให้ประหยัดหน่วยความจำเมื่อทำงานกับข้อมูลขนาดใหญ่ จนกว่าจะมีการเรียกใช้งานจริง
+
+---
+
+### การเปรียบเทียบการ Refactor โค้ด
+
+#### 1. การเปลี่ยนจาก Loop ไปใช้ `map`
+`map(function, iterable)` ใช้เมื่อต้องการ**แปลงข้อมูลทุกตัว**ใน List/Iterable ด้วยฟังก์ชันเดียวกัน (แปลง 1:1)
+
+* **แบบเดิม (`for` loop):**
+  ```python
+  usd_prices = [100, 250, 50, 1200]
+  thb_prices = []
+  for price in usd_prices:
+      thb_prices.append(price * 35)
+  ```
+* **แบบ Refactored (`map` + `lambda`):**
+  ```python
+  usd_prices = [100, 250, 50, 1200]
+  thb_prices = list(map(lambda price: price * 35, usd_prices))
+  ```
+
+#### 2. การเปลี่ยนจาก Loop ไปใช้ `reduce`
+`reduce(function, iterable[, initializer])` จากไลบรารี `functools` ใช้เมื่อต้องการ**ยุบรวมข้อมูลทั้ง List ให้เหลือค่าเดียว** (เช่น หาผลรวม, หาค่ามากสุด) โดยจะนำผลลัพธ์ของคู่ก่อนหน้าไปคำนวณกับตัวถัดไปเรื่อยๆ
+
+* **แบบเดิม (`while` loop):**
+  ```python
+  transactions = [1200, 450, 3000, 800]
+  total_revenue = 0
+  i = 0
+  while i < len(transactions):
+      total_revenue += transactions[i]
+      i += 1
+  ```
+* **แบบ Refactored (`reduce` + `lambda`):**
+  ```python
+  from functools import reduce
+  transactions = [1200, 450, 3000, 800]
+  total_revenue = reduce(lambda x, y: x + y, transactions)
+  ```
+
+#### 3. แบบผสมผสาน: MapReduce Pattern
+คำนวณราคารวมของสินค้าทั้งหมดในตะกร้าที่รวม VAT 7% แล้ว
+
+* **แบบเดิม (`for` loop):**
+  ```python
+  cart_prices = [1000, 2000, 500]
+  total_with_vat = 0
+  for price in cart_prices:
+      price_with_vat = price * 1.07
+      total_with_vat += price_with_vat
+  ```
+* **แบบ Refactored (`map` -> `reduce`):**
+  ```python
+  from functools import reduce
+  cart_prices = [1000, 2000, 500]
+  total_with_vat = reduce(lambda acc, price: acc + price, map(lambda price: price * 1.07, cart_prices))
+  ```
+
+---
+
+### ข้อควรระวัง (และทางเลือกอื่นที่ดีกว่าใน Python)
+
+แม้ว่า `map` และ `lambda` จะสั้น แต่มีข้อเสียสำคัญคือ **อ่านยากขึ้น (Readability)** หากเงื่อนไขหรือตัวฟังก์ชันมีความซับซ้อน
+
+ในชุมชน Python (รวมถึงคำแนะนำใน PEP 8) มักจะแนะนำให้ใช้ **List Comprehension** แทน เพราะอ่านง่ายและเป็นระเบียบมากกว่า:
+
+```python
+# ใช้ List Comprehension (อ่านง่ายที่สุดและเป็น Pythonic style)
+squared = [x ** 2 for x in numbers]
+```
+
+**เปรียบเทียบ:**
+* `map(lambda x: x ** 2, numbers)` -> ต้องทำความเข้าใจทั้ง `map` และ syntax ของ `lambda`
+* `[x ** 2 for x in numbers]` -> อ่านตรงตัวเหมือนภาษาอังกฤษทั่วไป (เอา x กำลังสอง สำหรับ x ทุกตัวใน numbers)
+
 ## Exercises & Solutions
 
 Each module from 03 to 05 includes a hands-on exercise in an `exercise/exercise.py` directory (e.g., `03_data_sources/01_files/exercise/exercise.py`). These exercises contain `TODO` items and test assertions for students to implement and verify their code.
