@@ -88,6 +88,81 @@
 
 ---
 
+## Section 2 — Pandas Series (1 คอลัมน์)
+
+> สอน Series ก่อน DataFrame เสมอ — เพราะ DataFrame ก็คือ Series หลายตัวมาต่อกัน
+> ถ้าเข้าใจ "คอลัมน์เดียว" ก่อน พอเป็นตารางทั้งใบจะไม่งง
+
+### 🎤 Speaker Notes (ผู้สอน)
+> เริ่มจากหน่วยที่เล็กที่สุดก่อนนะครับ — **Series** คือข้อมูล **1 คอลัมน์**
+>
+> หน้าตาเหมือน list ของ Python ที่ทุกคนรู้จัก... แต่มันมีของแถมครับ
+>
+> *(เว้นจังหวะ)*
+>
+> Series มี **index** (ป้ายชื่อ) ติดมากับทุกค่าด้วย
+>
+> นึกภาพ list ที่แต่ละช่องมีป้ายแปะอยู่ — นั่นแหละ Series
+
+### จุดสอนหลัก
+```python
+import pandas as pd
+prices = pd.Series([650, 2500, 8500], index=["mouse", "keyboard", "desk"])
+
+prices["keyboard"]      # เรียกด้วยป้ายชื่อ (index) -> 2500
+prices * 1.07           # vectorized — คูณ VAT ทั้งคอลัมน์ทีเดียว ไม่ต้องวน loop
+prices.mean()           # มี method สถิติในตัว
+```
+> 🔑 ขายไอเดีย **vectorized**: `prices * 1.07` ทำกับทุกค่าพร้อมกัน — นี่คือพลังของ pandas
+> (ไม่ต้องเขียน `for`)
+
+### ⚠️ นักเรียนมักพลาด — index alignment
+บวก Series 2 ตัว pandas จับคู่ด้วย **index** ไม่ใช่ตำแหน่ง → ป้ายไม่ตรงได้ `NaN`:
+```python
+a = pd.Series([1, 2], index=["x", "y"])
+b = pd.Series([10, 20], index=["y", "z"])
+a + b      # x=NaN, y=12, z=NaN  (จับคู่ตาม index!)
+```
+> Teaching tip: Series = **list + ป้ายชื่อ (index)** — ป้ายนี่แหละที่ทำให้ pandas ฉลาด
+
+---
+
+## Section 3 — Pandas DataFrame (ทั้งตาราง)
+
+### 🎤 Speaker Notes (ผู้สอน)
+> ทีนี้เอา Series หลาย ๆ คอลัมน์มาต่อกัน — ก็ได้ **DataFrame** คือตารางทั้งใบครับ
+>
+> นึกภาพ Excel sheet เลย: มีหัวคอลัมน์ (columns) มีเลขแถว (index)
+>
+> *(เว้นจังหวะ)*
+>
+> พูดให้เท่ ๆ คือ DataFrame = **dict ของ Series ที่ใช้ index ร่วมกัน** — แต่ละ key คือชื่อคอลัมน์
+
+### จุดสอนหลัก
+```python
+df = pd.DataFrame({
+    "product": ["Mouse", "Keyboard", "Desk"],
+    "price":   [650, 2500, 8500],
+    "stock":   [200, 80, 25],
+})
+
+df["price"]            # เลือก 1 คอลัมน์ -> ได้ Series
+df[["product","price"]] # เลือกหลายคอลัมน์ -> ได้ DataFrame
+df["total"] = df["price"] * df["stock"]   # สร้างคอลัมน์ใหม่จากคอลัมน์เดิม
+df.shape; df.columns; df.dtypes           # สำรวจโครงสร้าง
+```
+
+### ⚠️ นักเรียนมักพลาด — วงเล็บเดี่ยว vs คู่
+| เขียน | ได้ |
+|-------|-----|
+| `df["price"]` | **Series** (1 คอลัมน์) |
+| `df[["price"]]` | **DataFrame** (ตารางคอลัมน์เดียว) |
+
+> สับสนบ่อยมาก: อยากได้ "ตาราง" ต้องใช้ **วงเล็บก้ามปูคู่** `[[ ]]`
+> Teaching tip: DataFrame = หลาย Series ที่แชร์ index เดียวกัน → เชื่อมกลับ Section 2
+
+---
+
 ## Section 4 — Reading & Writing Data 📥 (เริ่มจากตรงนี้!)
 
 > ทุกงาน pandas เริ่มจาก "เอาไฟล์เข้ามาเป็น DataFrame" ก่อนเสมอ — อย่าข้ามขั้นนี้
