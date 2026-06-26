@@ -12,7 +12,7 @@ s3() syntax:
 
   Example:
     SELECT * FROM s3(
-        'http://localhost:9000/exercise-lake/silver/users/2026-06-24/data.parquet',
+        'http://localhost:9000/exercise-lake/silver/customers/2026-06-24/data.parquet',
         'ACCESS_KEY', 'SECRET_KEY',
         'Parquet'
     )
@@ -51,10 +51,11 @@ try:
     # Task 2: Load — INSERT INTO ... SELECT FROM s3()
     # =========================================================================
     print("\n--- Task 2: Load Silver → ClickHouse ---")
-    # TODO: For each table, truncate then INSERT using s3() table function.
+    # TODO: For each table: CREATE TABLE IF NOT EXISTS (types matching the Silver
+    #       Parquet), TRUNCATE, then INSERT using the s3() table function.
     #       Path pattern: {endpoint}/{BUCKET}/silver/{table}/{TODAY}/data.parquet
     #
-    # Tables: users, addresses, orders, order_items, transports
+    # Tables: customers, products, orders, order_items, deliveries
 
     # =========================================================================
     # Task 3: Validate
@@ -74,7 +75,7 @@ try:
 
     # --- Verification ---
     # Uncomment after completing all tasks:
-    # for table in ["users", "addresses", "orders", "order_items", "transports"]:
+    # for table in ["customers", "products", "orders", "order_items", "deliveries"]:
     #     count = client.execute(f"SELECT count() FROM {table}")[0][0]
     #     print(f"[verify] {table}: {count} rows")
     # print("\n✅ Pipeline complete!")

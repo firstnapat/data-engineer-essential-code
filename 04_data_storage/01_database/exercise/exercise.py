@@ -1,6 +1,10 @@
 """
-Exercise: Database Storage — Building a Category Dimension Table
-Practice the concepts from storage_db.py (star schema with SQLite).
+Exercise: Database Storage — Building a Product Dimension + Order-Items Fact
+Practice the concepts from storage_db.py (star schema with SQLite) on the
+QuickMart dataset (datasets/new-raw/).
+
+The raw CSVs are DIRTY (duplicates, blank categories, qty=0, bad prices), so
+you must clean them before loading — schema-on-write means bad rows don't get in.
 Run: uv run 04_data_storage/01_database/exercise/exercise.py
 """
 import sqlite3
@@ -8,106 +12,126 @@ import pandas as pd
 import os
 
 DB_PATH = "/tmp/exercise_warehouse.db"
-DATASETS = os.path.join(os.path.dirname(__file__), "../../../datasets")
+RAW = os.path.join(os.path.dirname(__file__), "../../../datasets/new-raw")
 
 # Remove old DB to start fresh
 if os.path.exists(DB_PATH):
     os.remove(DB_PATH)
 
-# Load sales data
-df = pd.read_csv(os.path.join(DATASETS, "sales.csv"), parse_dates=["date"])
-print(f"Loaded {len(df)} rows from sales.csv")
-print(f"Unique categories: {sorted(df['category'].unique())}")
+# Load raw QuickMart data
+products_raw = pd.read_csv(os.path.join(RAW, "products.csv"))
+items_raw    = pd.read_csv(os.path.join(RAW, "order_items.csv"))
+print(f"Loaded {len(products_raw)} raw product rows, {len(items_raw)} raw order-item rows")
 
 with sqlite3.connect(DB_PATH) as conn:
 
     # =========================================================================
-    # Task 1: Create dim_category table
+    # Task 1: Create dim_product table
     # =========================================================================
-    print("\n--- Task 1: Create dim_category table ---")
-    # TODO: Use conn.executescript() to create a table called dim_category
-    #       with columns:
-    #         - category_id  INTEGER PRIMARY KEY AUTOINCREMENT
-    #         - name         TEXT NOT NULL UNIQUE
-    #       Use CREATE TABLE IF NOT EXISTS.
-
-    print("[schema] dim_category table created")
-
-    # =========================================================================
-    # Task 2: Load unique categories into dim_category
-    # =========================================================================
-    print("\n--- Task 2: Load categories from sales.csv ---")
-    # TODO: Get unique categories from df["category"] and insert each one
-    #       into dim_category using:
-    #         conn.execute("INSERT OR IGNORE INTO dim_category (name) VALUES (?)", (name,))
-    #       Hint: loop over df["category"].unique()
-
-    print("[dim] Categories loaded")
+    # A dimension table holds one clean row per business entity. We keep the
+    # source product_id as the natural key (UNIQUE) so the fact table can join.
+    print("\n--- Task 1: Create dim_product table ---")
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS dim_product (
+        product_key  INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id   INTEGER NOT NULL UNIQUE,
+        product_name TEXT NOT NULL,
+        category     TEXT NOT NULL,
+        brand        TEXT NOT NULL
+    );
+    """)
+    print("[schema] dim_product table created")
 
     # =========================================================================
-    # Task 3: Build a category lookup dictionary
+    # Task 2: Clean + load unique products into dim_product
     # =========================================================================
-    print("\n--- Task 3: Build category lookup dict ---")
-    # TODO: Query dim_category to build a dictionary mapping name -> category_id.
-    #       Use: conn.execute("SELECT category_id, name FROM dim_category")
-    #       Store the result in a variable called `categories` (dict).
-    #       Example result: {"Electronics": 1, "Furniture": 2, ...}
-    categories = {}  # Replace with your code
+    # Dirty rows to drop: blank category, then keep one row per product_id.
+    print("\n--- Task 2: Clean and load products ---")
+    products_clean = products_raw.copy()
+    products_clean["category"] = products_clean["category"].astype("string").str.strip()
+    products_clean = products_clean[products_clean["category"].notna() & (products_clean["category"] != "")]
+    products_clean = products_clean.drop_duplicates(subset=["product_id"])
 
-    print(f"Category lookup: {categories}")
+    for _, r in products_clean.iterrows():
+        conn.execute(
+            "INSERT OR IGNORE INTO dim_product (product_id, product_name, category, brand) "
+            "VALUES (?, ?, ?, ?)",
+            (int(r["product_id"]), r["product_name"], r["category"], r["brand"]),
+        )
+    print(f"[dim] {len(products_clean)} clean products loaded")
 
     # =========================================================================
-    # Task 4: Create fact_sales with FK to dim_category + revenue query
+    # Task 3: Build a product lookup dictionary {product_id: product_key}
     # =========================================================================
-    print("\n--- Task 4: Create fact_sales and query revenue by category ---")
-    # TODO (Step A): Use conn.executescript() to create fact_sales table with:
-    #         - id           INTEGER PRIMARY KEY AUTOINCREMENT
-    #         - sale_date    TEXT NOT NULL
-    #         - category_id  INTEGER REFERENCES dim_category(category_id)
-    #         - quantity     INTEGER NOT NULL
-    #         - unit_price   REAL NOT NULL
-    #         - revenue      REAL NOT NULL
+    print("\n--- Task 3: Build product lookup dict ---")
+    cursor = conn.execute("SELECT product_key, product_id FROM dim_product")
+    product_keys = {product_id: product_key for product_key, product_id in cursor.fetchall()}
+    print(f"Lookup has {len(product_keys)} products")
 
-    # TODO (Step B): Insert rows from df into fact_sales.
-    #       For each row, look up the category_id using your `categories` dict.
-    #       Use conn.executemany() with this SQL:
-    #         "INSERT INTO fact_sales (sale_date, category_id, quantity, unit_price, revenue) VALUES (?,?,?,?,?)"
-    #       Build a list of tuples: (str(row["date"]), categories[row["category"]],
-    #                                int(row["quantity"]), float(row["unit_price"]),
-    #                                float(row["revenue"]))
+    # =========================================================================
+    # Task 4: Create fact_order_items + clean-load + revenue-by-category query
+    # =========================================================================
+    print("\n--- Task 4: Create fact_order_items and query revenue by category ---")
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS fact_order_items (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id    INTEGER NOT NULL,
+        product_key INTEGER REFERENCES dim_product(product_key),
+        quantity    INTEGER NOT NULL,
+        unit_price  REAL NOT NULL,
+        subtotal    REAL NOT NULL
+    );
+    """)
 
-    # TODO (Step C): Write a SQL query that JOINs fact_sales with dim_category
-    #       to get total revenue by category name. Use pd.read_sql_query().
-    #       SQL hint:
-    #         SELECT c.name, SUM(f.revenue) AS total_revenue
-    #         FROM fact_sales f
-    #         JOIN dim_category c ON f.category_id = c.category_id
-    #         GROUP BY c.name
-    #         ORDER BY total_revenue DESC
-    #       Store the result in `revenue_by_cat`.
+    # Clean order_items: drop exact dups, drop qty<=0 / unit_price<=0,
+    # recompute subtotal (the raw one is sometimes wrong), keep mappable products.
+    items_clean = items_raw.drop_duplicates().copy()
+    items_clean = items_clean[(items_clean["qty"] > 0) & (items_clean["unit_price"] > 0)]
+    items_clean = items_clean[items_clean["product_id"].isin(product_keys)]
+    items_clean["subtotal"] = (items_clean["qty"] * items_clean["unit_price"]).round(2)
 
-    # Uncomment after completing Step C:
-    # print(revenue_by_cat)
+    fact_rows = [
+        (int(r["order_id"]), product_keys[int(r["product_id"])],
+         int(r["qty"]), float(r["unit_price"]), float(r["subtotal"]))
+        for _, r in items_clean.iterrows()
+    ]
+    conn.executemany(
+        "INSERT INTO fact_order_items (order_id, product_key, quantity, unit_price, subtotal) "
+        "VALUES (?,?,?,?,?)",
+        fact_rows,
+    )
+    print(f"[fact] {len(fact_rows)} clean order-item rows loaded")
+
+    revenue_by_cat = pd.read_sql_query("""
+        SELECT p.category, ROUND(SUM(f.subtotal), 2) AS total_revenue
+        FROM fact_order_items f
+        JOIN dim_product p ON f.product_key = p.product_key
+        GROUP BY p.category
+        ORDER BY total_revenue DESC
+    """, conn)
+    print(revenue_by_cat)
 
     # =========================================================================
     # Task 5: Verification
     # =========================================================================
     print("\n--- Task 5: Verification ---")
-    # TODO: Use pd.read_sql_query("SELECT * FROM dim_category", conn) to read
-    #       the dim_category table into a DataFrame called `verify_df`.
-    #       Then verify it has exactly 4 rows.
-    verify_df = pd.read_sql_query("SELECT * FROM dim_category", conn)
-    print(f"dim_category rows: {len(verify_df)}")
-    print(verify_df)
+    verify_df = pd.read_sql_query("SELECT * FROM dim_product", conn)
+    print(f"dim_product rows: {len(verify_df)}")
 
-    assert len(verify_df) == 4, f"Expected 4 categories, got {len(verify_df)}"
-    assert set(verify_df["name"]) == {"Electronics", "Furniture", "Clothing", "Accessories"}, \
-        f"Unexpected categories: {set(verify_df['name'])}"
-    assert len(categories) == 4, f"Lookup dict should have 4 entries, got {len(categories)}"
+    # All 50 base products survive cleaning (every product_id has a clean row).
+    assert len(verify_df) == 50, f"Expected 50 products, got {len(verify_df)}"
+    assert set(verify_df["category"]) == {"Beverage", "Snack", "Personal Care", "Household", "Food"}, \
+        f"Unexpected categories: {set(verify_df['category'])}"
+    assert verify_df["category"].str.strip().ne("").all(), "Blank category leaked into dim_product"
 
-    # Verify fact_sales has the right number of rows
-    fact_count = pd.read_sql_query("SELECT COUNT(*) AS cnt FROM fact_sales", conn)
-    assert fact_count["cnt"][0] == len(df), \
-        f"Expected {len(df)} fact rows, got {fact_count['cnt'][0]}"
+    fact_count = pd.read_sql_query("SELECT COUNT(*) AS cnt FROM fact_order_items", conn)["cnt"][0]
+    assert fact_count == len(fact_rows), f"Expected {len(fact_rows)} fact rows, got {fact_count}"
+    # Every fact row must reference a real dimension row (no orphan FKs).
+    orphans = pd.read_sql_query("""
+        SELECT COUNT(*) AS n FROM fact_order_items f
+        LEFT JOIN dim_product p ON f.product_key = p.product_key
+        WHERE p.product_key IS NULL
+    """, conn)["n"][0]
+    assert orphans == 0, f"Found {orphans} fact rows with no matching product"
 
     print("\n✅ All verifications passed!")
