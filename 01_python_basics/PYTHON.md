@@ -184,11 +184,6 @@ print(f"Right-align: {product:>15}")     # right-align in 15 chars
 print(f"Left-align:  {product:<15}|")    # left-align in 15 chars
 print(f"Zero-pad SKU: P{7:05d}")         # P00007
 
-# .format() — older string formatting (still seen in legacy code)
-print("\n--- .format() ---")
-template = "{} x{} = {:,.2f} THB"
-print(template.format("Wireless Mouse", 15, 9750.0))
-
 # reading input (input() shown commented; simulated here so the script runs)
 print("\n--- Input (simulated — normally use input()) ---")
 # sku = input("Enter SKU: ")
@@ -369,58 +364,6 @@ for token in stream:
 print(f"Total revenue: {total_revenue}")
 ```
 
-### `04_list_comprehension.py`
-```python
-# basic list comprehension — apply 7% VAT to a price list
-print("--- Basic List Comprehension ---")
-prices = [650, 2500, 8500, 35000]
-with_vat = [round(p * 1.07, 2) for p in prices]
-print(f"prices:   {prices}")
-print(f"with VAT: {with_vat}")
-
-# with a filter (if) — only high-value line items
-print("\n--- With Filter ---")
-revenues = [105000, 9750, 17000, 60000, 450, 9000]
-big_orders = [r for r in revenues if r >= 10000]
-discounted = [r * 0.9 for r in revenues if r >= 50000]
-print(f"big orders (>=10k): {big_orders}")
-print(f"discount on >=50k:  {discounted}")
-
-# transforming strings — normalise messy product names
-print("\n--- String Operations ---")
-raw_names = ["  laptop pro ", " wireless MOUSE ", "  webcam  "]
-clean = [n.strip().title() for n in raw_names]
-print(f"clean: {clean}")
-
-products = ["Laptop Pro", "Wireless Mouse", "Webcam", "Water Bottle", "Wifi Router"]
-w_products = [p for p in products if p.startswith("W")]
-print(f"starts with 'W': {w_products}")
-
-# nested list comprehension — flatten/transpose a warehouse stock grid
-print("\n--- Nested List Comprehension ---")
-grid = [[50, 200, 30], [12, 80, 0], [5, 150, 60]]
-flat = [val for row in grid for val in row]
-columns = [[row[i] for row in grid] for i in range(3)]
-print(f"flattened:         {flat}")
-print(f"columns (per SKU): {columns}")
-
-# dictionary comprehension — SKU -> price lookup
-print("\n--- Dictionary Comprehension ---")
-skus = ["P001", "P002", "P006"]
-unit_prices = [35000, 650, 8500]
-price_book = {sku: price for sku, price in zip(skus, unit_prices)}
-print(f"price book: {price_book}")
-
-expensive = {sku: p for sku, p in price_book.items() if p > 1000}
-print(f"expensive (>1000): {expensive}")
-
-# set comprehension — distinct categories from order rows
-print("\n--- Set Comprehension ---")
-order_categories = ["Electronics", "Electronics", "Furniture", "Clothing", "Furniture"]
-distinct = {c for c in order_categories}
-print(f"distinct categories: {distinct}")
-```
-
 ---
 
 ## 06 Functions
@@ -591,31 +534,6 @@ def make_discount(rate):
 member_price = make_discount(0.10)     # 10% off
 clearance_price = make_discount(0.50)  # 50% off
 print(f"member_price(35000)={member_price(35000)}, clearance_price(35000)={clearance_price(35000)}")
-```
-
-### `04_generators.py`
-```python
-# generator for memory efficiency (data engineering core concept)
-print("--- Generator Function (yield) ---")
-
-def stream_log_records(count):
-    """Simulate streaming data from a large server log file without loading all into RAM."""
-    for i in range(1, count + 1):
-        # yields one row at a time, pausing function execution state
-        yield f"2026-06-23,LOG_EVENT_{i:03d},INFO,user_id={1000+i}"
-
-# Getting generator object
-log_stream = stream_log_records(1000000)  # Contains 1 million entries
-print(f"Object: {log_stream}")           # Just a generator object, doesn't consume memory yet
-
-# Pulling values with next()
-print(f"First record:  {next(log_stream)}")
-print(f"Second record: {next(log_stream)}")
-
-# Iterating generator in a loop (streams records one-by-one)
-print("\n--- Iterating Generator ---")
-for record in stream_log_records(3):
-    print(f"  Processing record: {record}")
 ```
 
 ---
@@ -826,6 +744,35 @@ incoming = ["Electronics", "Toys", "Clothing", "Gadgets"]
 for value in incoming:
     status = "valid" if value in valid_categories else "REJECT"
     print(f"  {value:12} -> {status}")
+```
+
+### Comprehensions (list / dict / set)
+แนวคิดเดียวกับ list/dict/set ด้านบน แต่เขียนสั้นลงในบรรทัดเดียว — สร้าง collection จากการวนลูป
+```python
+# list comprehension — apply 7% VAT to a price list
+print("--- List Comprehension ---")
+prices = [650, 2500, 8500, 35000]
+with_vat = [round(p * 1.07, 2) for p in prices]
+print(f"with VAT: {with_vat}")
+
+# with a filter (if) — keep only high-value line items
+print("\n--- With Filter ---")
+revenues = [105000, 9750, 17000, 60000, 450]
+big_orders = [r for r in revenues if r >= 10000]
+print(f"big orders (>=10k): {big_orders}")
+
+# dict comprehension — SKU -> price lookup
+print("\n--- Dict Comprehension ---")
+skus = ["P001", "P002", "P006"]
+unit_prices = [35000, 650, 8500]
+price_book = {sku: price for sku, price in zip(skus, unit_prices)}
+print(f"price book: {price_book}")
+
+# set comprehension — distinct categories from order rows
+print("\n--- Set Comprehension ---")
+order_categories = ["Electronics", "Electronics", "Furniture", "Clothing"]
+distinct = {c for c in order_categories}
+print(f"distinct categories: {distinct}")
 ```
 
 ---
