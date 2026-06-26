@@ -1,5 +1,9 @@
 """
-Solution: Data Lake — Bronze / Silver / Gold with RustFS
+Solution: Data Lake — Bronze / Silver / Gold with RustFS (QuickMart data)
+
+Bronze = raw CSVs landed as-is (datasets/new-raw/ — dirty).
+Silver = cleaned & deduplicated per table.
+Gold   = business aggregates ready to query.
 """
 import os
 import io
@@ -7,9 +11,9 @@ from datetime import date
 import pandas as pd
 import boto3
 
-DATASETS = os.path.join(os.path.dirname(__file__), "../../../datasets")
-BUCKET   = "exercise-lake"
-TODAY    = date.today().isoformat()
+RAW    = os.path.join(os.path.dirname(__file__), "../../../datasets/new-raw")
+BUCKET = "exercise-lake"
+TODAY  = date.today().isoformat()
 
 s3 = boto3.client(
     "s3",
@@ -29,7 +33,7 @@ def to_parquet_bytes(df: pd.DataFrame) -> bytes:
 
 def upload(df: pd.DataFrame, key: str) -> None:
     s3.put_object(Bucket=BUCKET, Key=key, Body=to_parquet_bytes(df))
-    print(f"[lake] {len(df):>4} rows -> s3://{BUCKET}/{key}")
+    print(f"[lake] {len(df):>5} rows -> s3://{BUCKET}/{key}")
 
 # --- Task 1 & 2: client + bucket ---------------------------------------------
 
@@ -38,46 +42,61 @@ if BUCKET not in existing:
     s3.create_bucket(Bucket=BUCKET)
 print(f"[lake] Bucket '{BUCKET}' ready")
 
-# --- Task 3: Bronze ----------------------------------------------------------
+# --- Task 3: Bronze — land raw CSVs as-is ------------------------------------
 
-TABLES = ["users", "addresses", "orders", "order_items", "transports"]
+TABLES = ["customers", "products", "orders", "order_items", "deliveries"]
 
 raw = {}
 for name in TABLES:
-    raw[name] = pd.read_csv(os.path.join(DATASETS, f"raw/{name}_raw.csv"))
+    raw[name] = pd.read_csv(os.path.join(RAW, f"{name}.csv"))
     upload(raw[name], f"bronze/{name}/{TODAY}/data.parquet")
 
-# --- Task 4: Silver ----------------------------------------------------------
+# --- Task 4: Silver — clean each dataset -------------------------------------
 
 silver = {}
 
-silver["users"] = raw["users"].drop_duplicates(subset=["email"])
+# customers: drop dup rows + dup ids, blank name, blank/invalid email; tidy tier
+cust = raw["customers"].drop_duplicates().drop_duplicates(subset=["customer_id"]).copy()
+cust = cust[cust["customer_name"].astype("string").str.strip().fillna("") != ""]
+cust = cust[cust["email"].astype("string").str.contains(r"@.+\.", regex=True, na=False)]
+cust["sub_tier"] = cust["sub_tier"].str.strip().str.title()
+silver["customers"] = cust
 
-silver["addresses"] = raw["addresses"].copy()
-silver["addresses"]["province"] = silver["addresses"]["province"].str.title()
-silver["addresses"] = silver["addresses"].dropna(subset=["postal_code"])
+# products: drop dup rows + dup ids, blank category, price <= 0
+prod = raw["products"].drop_duplicates().copy()
+prod["category"] = prod["category"].astype("string").str.strip()
+prod = prod[prod["category"].notna() & (prod["category"] != "")]
+prod = prod[prod["price"] > 0]
+silver["products"] = prod.drop_duplicates(subset=["product_id"])
 
-silver["orders"] = raw["orders"].drop_duplicates(subset=["order_id"])
+# orders: drop dup rows + dup ids, amount <= 0, tidy status, drop orphan customers
+orders = raw["orders"].drop_duplicates().drop_duplicates(subset=["order_id"]).copy()
+orders = orders[orders["amount"] > 0]
+orders["status"] = orders["status"].str.strip().str.lower().replace({"canceled": "cancelled"})
+orders = orders[orders["customer_id"].isin(silver["customers"]["customer_id"])]
+silver["orders"] = orders
 
-silver["order_items"] = raw["order_items"].copy()
-silver["order_items"]["subtotal"] = (
-    silver["order_items"]["quantity"] * silver["order_items"]["unit_price"]
-).round(2)
+# order_items: drop dup rows, qty/unit_price <= 0, recompute subtotal
+items = raw["order_items"].drop_duplicates().copy()
+items = items[(items["qty"] > 0) & (items["unit_price"] > 0)]
+items["subtotal"] = (items["qty"] * items["unit_price"]).round(2)
+silver["order_items"] = items
 
-silver["transports"] = raw["transports"].copy()
-silver["transports"].loc[
-    silver["transports"]["status"] != "delivered", "delivered_at"
-] = None
+# deliveries: drop dup rows, parcels <= 0, blank vehicle
+deliv = raw["deliveries"].drop_duplicates().copy()
+deliv = deliv[deliv["parcels_delivered"] > 0]
+deliv = deliv[deliv["vehicle_id"].astype("string").str.strip().fillna("") != ""]
+silver["deliveries"] = deliv
 
 for name, df in silver.items():
     upload(df, f"silver/{name}/{TODAY}/data.parquet")
 
-# --- Task 5: Gold ------------------------------------------------------------
+# --- Task 5: Gold — aggregate cleaned orders by status -----------------------
 
 df_gold = (
     silver["orders"].groupby("status")
     .agg(order_count=("order_id", "count"),
-         total_revenue=("total_amount", "sum"))
+         total_revenue=("amount", "sum"))
     .reset_index()
     .round(2)
 )
@@ -94,7 +113,7 @@ for obj in resp.get("Contents", []):
 
 resp = s3.list_objects_v2(Bucket=BUCKET)
 keys = [obj["Key"] for obj in resp.get("Contents", [])]
-assert any("bronze/users" in k for k in keys),  "Missing bronze/users"
-assert any("silver/orders" in k for k in keys), "Missing silver/orders"
-assert any("gold/orders" in k for k in keys),   "Missing gold/orders"
+assert any("bronze/customers" in k for k in keys), "Missing bronze/customers"
+assert any("silver/orders" in k for k in keys),    "Missing silver/orders"
+assert any("gold/orders" in k for k in keys),      "Missing gold/orders"
 print("\n✅ All verifications passed!")

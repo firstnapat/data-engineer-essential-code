@@ -115,10 +115,17 @@ curl -LsSf https://astral.sh/uv/install.sh | sh   # macOS / Linux
 ```bash
 uv sync                         # create .venv and install dependencies
 cp .env.example .env            # connection details for storage backends (defaults work)
-docker compose up -d            # start ClickHouse and RustFS
+docker compose up -d            # start ClickHouse, RustFS, and the DuckDB UI
 ```
 
 Stop the services with `docker compose down` (add `-v` to also wipe the data volumes).
+
+### DuckDB SQL UI
+
+`docker compose up -d duckdb-ui` builds a DuckDB instance pre-loaded with the
+QuickMart raw CSVs and serves a browser SQL editor at <http://localhost:4213>.
+Handy for exploring the data and practising SQL (e.g. window functions) without
+writing any Python.
 
 ## Running Examples
 
@@ -156,6 +163,7 @@ The storage modules in `04_data_storage/` connect to backends. SQLite and Delta 
 | RustFS (S3) | `04_data_storage/02_data_lake/`, `05_data_ingestion/02_to_data_lake/` | S3 `:9000`, console `:9001` |
 | ClickHouse | `04_data_storage/03_data_warehouse/`, `05_data_ingestion/04_datalake_to_warehouse/` | HTTP `:8123` |
 | Delta Lake | `04_data_storage/04_data_lakehouse/`, `05_data_ingestion/03_to_lakehouse/` | No service — writes to `/tmp/delta/` |
+| DuckDB UI | `04_data_storage/03_data_warehouse/` (SQL practice) | Browser UI `:4213` |
 
 **RustFS authentication:** the Python examples read credentials from `credentials.json` placed next to the script. Download this file from the RustFS console at <http://localhost:9001> (login `minioadmin` / `minioadmin`) under **Access Keys → Create → Download**.
 
@@ -172,17 +180,20 @@ The storage modules in `04_data_storage/` connect to backends. SQLite and Delta 
 | `datasets/products.xml` | Same catalog in XML format |
 | `datasets/sample.txt` | Plain text report for file-handling exercises |
 
-### E-commerce raw datasets (modules 04–05)
+### QuickMart raw datasets (modules 02, 04–05)
 
-Six related CSV files in `datasets/raw/` with intentional data quality issues for cleaning practice. See `datasets/er_diagram.md` for the full schema and relationships.
+Five related CSV files in `datasets/new-raw/` — the QuickMart retail dataset.
+The files are **intentionally dirty** (duplicate rows, blank/invalid emails,
+mixed-case `status`/`sub_tier`, `price`/`amount` ≤ 0, `qty = 0`, wrong
+subtotals, orphan foreign keys, future dates) so the staging/cleaning steps
+have real work to do. See `quickmart-er-diagram.png` for the relationships.
 
-| File | Rows | Description |
-|------|------|-------------|
-| `datasets/raw/products_raw.csv` | 33 | Product catalog |
-| `datasets/raw/users_raw.csv` | ~80 | Customer accounts |
-| `datasets/raw/addresses_raw.csv` | ~90 | Shipping addresses |
-| `datasets/raw/orders_raw.csv` | ~108 | Customer orders |
-| `datasets/raw/order_items_raw.csv` | ~198 | Line items per order |
-| `datasets/raw/transports_raw.csv` | ~100 | Shipment records |
+| File | Rows (raw) | Clean base | Description |
+|------|-----------|-----------|-------------|
+| `datasets/new-raw/customers.csv` | 1090 | 1000 | Customer accounts (name, email, sub_tier) |
+| `datasets/new-raw/products.csv` | 67 | 50 | Product catalog (category, brand, price) |
+| `datasets/new-raw/orders.csv` | 3235 | 3000 | Customer orders (date, status, amount) |
+| `datasets/new-raw/order_items.csv` | 9382 | — | Line items (qty, unit_price, subtotal) |
+| `datasets/new-raw/deliveries.csv` | 1075 | 1000 | Delivery records (vehicle, parcels) |
 
-Regenerate with: `uv run datasets/generate_raw_data.py`
+Regenerate with: `uv run datasets/generate_quick_marts.py`

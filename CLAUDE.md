@@ -48,7 +48,7 @@ uv run jupyter notebook 02_working_with_data/01_pandas/01_pandas.ipynb
                                #   Series, DataFrame, read/write, select, stats,
                                #   manipulation, cleaning, merge/join/concat)
   02_assignment/               # pandas_practice_project.ipynb + workshop_eda.ipynb
-                               #   (EDA workshop runs on datasets/products.json)
+                               #   (both run on datasets/new-raw/ QuickMart data)
 
 03_data_sources/               # WHERE data comes from — each script: read → inspect → clean
   01_files/                    # work_with_{text,csv,json,xml,parquet,avro}.py (one per format)

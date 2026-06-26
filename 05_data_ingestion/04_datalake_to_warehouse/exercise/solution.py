@@ -21,7 +21,11 @@ with open(CREDS_PATH) as f:
 
 access_key = creds["accessKey"]
 secret_key = creds["secretKey"]
-endpoint   = f"http://{creds['url'].replace('9001', '9000')}"
+# ClickHouse runs in a container, so the s3() function can't reach RustFS at
+# "localhost" — that would be the ClickHouse container itself. host.docker.internal
+# resolves to the host where RustFS publishes port 9000. (Override with S3_ENDPOINT.)
+_host = creds["url"].replace("9001", "9000").replace("localhost", "host.docker.internal")
+endpoint = os.getenv("S3_ENDPOINT", f"http://{_host}")
 
 client = clickhouse_connect.get_client(
     host=os.getenv("CLICKHOUSE_HOST", "localhost"),
@@ -34,10 +38,40 @@ print("[ingest] Connected")
 
 # --- Task 2: Load Silver → ClickHouse via s3() -------------------------------
 
-TABLES = ["users", "addresses", "orders", "order_items", "transports"]
+TABLES = ["customers", "products", "orders", "order_items", "deliveries"]
+
+# Destination tables (types match the Silver Parquet written by the data-lake step)
+SCHEMAS = {
+    "customers": """
+        customer_id Int64, customer_name String, email String,
+        sub_tier String, created_at String
+    """,
+    "products": """
+        product_id Int64, product_name String, category String,
+        brand String, price Float64
+    """,
+    "orders": """
+        order_id Int64, customer_id Int64, order_date String,
+        status String, amount Float64
+    """,
+    "order_items": """
+        order_item_id Int64, order_id Int64, product_id Int64,
+        qty Int64, unit_price Float64, subtotal Float64
+    """,
+    "deliveries": """
+        delivery_id Int64, delivery_date String, vehicle_id String,
+        parcels_delivered Int64
+    """,
+}
+PK = {"customers": "customer_id", "products": "product_id", "orders": "order_id",
+      "order_items": "order_item_id", "deliveries": "delivery_id"}
 
 for table in TABLES:
     path = f"{endpoint}/{BUCKET}/silver/{table}/{TODAY}/data.parquet"
+    client.command(
+        f"CREATE TABLE IF NOT EXISTS {table} ({SCHEMAS[table]}) "
+        f"ENGINE = MergeTree() ORDER BY {PK[table]}"
+    )
     client.command(f"TRUNCATE TABLE IF EXISTS {table}")
     client.command(f"""
         INSERT INTO {table}

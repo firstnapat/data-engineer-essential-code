@@ -8,14 +8,16 @@ Setup (Docker — start RustFS first):
     -p 9000:9000 -p 9001:9001 \\
     quay.io/minio/minio server /data --console-address ':9001'
 
-Datasets: datasets/raw/ — see datasets/er_diagram.md for schema.
+Datasets: datasets/new-raw/ — the QuickMart raw CSVs (customers, products,
+orders, order_items, deliveries). They are DIRTY (duplicates, blank/invalid
+values, bad numbers); the Silver layer is where you clean them.
 """
 import os
 import io
 from datetime import date
 import pandas as pd
 
-DATASETS = os.path.join(os.path.dirname(__file__), "../../../datasets")
+RAW      = os.path.join(os.path.dirname(__file__), "../../../datasets/new-raw")
 BUCKET   = "exercise-lake"
 TODAY    = date.today().isoformat()
 
@@ -42,7 +44,8 @@ try:
     # =========================================================================
     print("\n--- Task 3: Bronze layer ---")
     # TODO: Read each CSV and upload as Parquet to bronze/{name}/{TODAY}/data.parquet
-    #       Datasets: users, addresses, orders, order_items, transports
+    #       Datasets: customers, products, orders, order_items, deliveries
+    #       (read from RAW/{name}.csv)
 
     # =========================================================================
     # Task 4: Silver — clean each dataset and upload
@@ -68,9 +71,9 @@ try:
     # Uncomment after completing all tasks:
     # resp = s3.list_objects_v2(Bucket=BUCKET)
     # keys = [obj["Key"] for obj in resp.get("Contents", [])]
-    # assert any("bronze/users" in k for k in keys),  "Missing bronze/users"
-    # assert any("silver/orders" in k for k in keys), "Missing silver/orders"
-    # assert any("gold/orders" in k for k in keys),   "Missing gold/orders"
+    # assert any("bronze/customers" in k for k in keys), "Missing bronze/customers"
+    # assert any("silver/orders" in k for k in keys),    "Missing silver/orders"
+    # assert any("gold/orders" in k for k in keys),      "Missing gold/orders"
     # print("\n✅ All verifications passed!")
 
 except Exception as e:
