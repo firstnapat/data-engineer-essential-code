@@ -16,3 +16,513 @@
 2024-03-01 09:00:23 ERROR [extract] Retry 2/3 failed
 2024-03-01 09:00:33 ERROR [extract] Retry 3/3 failed
 2024-03-01 09:00:33 ERROR [scheduler] Pipeline 'daily_customer' FAILED
+2024-03-01 10:00:01 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-01 10:00:02 INFO  [extract] Reading source file raw/product.csv
+2024-03-01 10:00:06 INFO  [extract] 1285 rows extracted
+2024-03-01 10:00:07 INFO  [validate] Checking schema...
+2024-03-01 10:00:08 INFO  [validate] Schema OK
+2024-03-01 10:00:09 INFO  [transform] Applying business rules to 1285 rows
+2024-03-01 10:00:10 WARN  [transform] product_id 'P78' not found in catalog, row skipped
+2024-03-01 10:00:11 ERROR [load] Connection timeout writing to table dim_product
+2024-03-01 10:00:21 ERROR [load] Retry 1/3 failed
+2024-03-01 10:00:31 ERROR [load] Retry 2/3 failed
+2024-03-01 10:00:41 ERROR [load] Retry 3/3 failed
+2024-03-01 10:00:41 ERROR [scheduler] Pipeline 'daily_product' FAILED
+2024-03-01 10:42:42 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-01 10:42:43 INFO  [extract] Reading source file raw/sales.csv
+2024-03-01 10:42:45 INFO  [extract] 4206 rows extracted
+2024-03-01 10:42:46 INFO  [validate] Checking schema...
+2024-03-01 10:42:47 WARN  [validate] 7 rows have null in column 'amount', defaulting to 0
+2024-03-01 10:42:48 INFO  [validate] Schema OK
+2024-03-01 10:42:49 INFO  [transform] Applying business rules to 4206 rows
+2024-03-01 10:42:52 INFO  [transform] 4206 rows transformed
+2024-03-01 10:42:53 INFO  [load] Writing to warehouse table fact_sales
+2024-03-01 10:42:57 INFO  [load] 4206 rows loaded
+2024-03-01 10:42:58 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 10:42:59 INFO  [scheduler] Pipeline 'daily_sales' completed in 39s
+2024-03-01 10:55:00 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-01 10:55:01 INFO  [extract] Reading source file raw/customer.csv
+2024-03-01 10:55:02 INFO  [extract] 4825 rows extracted
+2024-03-01 10:55:03 INFO  [validate] Checking schema...
+2024-03-01 10:55:04 INFO  [validate] Schema OK
+2024-03-01 10:55:05 INFO  [transform] Applying business rules to 4825 rows
+2024-03-01 10:55:06 INFO  [transform] 4825 rows transformed
+2024-03-01 10:55:07 INFO  [load] Writing to warehouse table dim_customer
+2024-03-01 10:55:12 INFO  [load] 4825 rows loaded
+2024-03-01 10:55:13 INFO  [scheduler] Pipeline 'daily_customer' completed in 21s
+2024-03-01 11:26:14 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-01 11:26:15 INFO  [extract] Reading source file raw/customer.csv
+2024-03-01 11:26:16 INFO  [extract] 4479 rows extracted
+2024-03-01 11:26:17 INFO  [validate] Checking schema...
+2024-03-01 11:26:18 INFO  [validate] Schema OK
+2024-03-01 11:26:19 INFO  [transform] Applying business rules to 4479 rows
+2024-03-01 11:26:20 INFO  [transform] 4479 rows transformed
+2024-03-01 11:26:21 INFO  [load] Writing to warehouse table dim_customer
+2024-03-01 11:26:26 INFO  [load] 4479 rows loaded
+2024-03-01 11:26:27 INFO  [scheduler] Pipeline 'daily_customer' completed in 15s
+2024-03-01 11:54:28 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-01 11:54:29 INFO  [extract] Reading source file raw/sales.csv
+2024-03-01 11:54:30 INFO  [extract] 4537 rows extracted
+2024-03-01 11:54:31 INFO  [validate] Checking schema...
+2024-03-01 11:54:32 INFO  [validate] Schema OK
+2024-03-01 11:54:33 INFO  [transform] Applying business rules to 4537 rows
+2024-03-01 11:54:36 INFO  [transform] 4537 rows transformed
+2024-03-01 11:54:37 INFO  [load] Writing to warehouse table fact_sales
+2024-03-01 11:54:41 INFO  [load] 4537 rows loaded
+2024-03-01 11:54:42 INFO  [scheduler] Pipeline 'daily_sales' completed in 32s
+2024-03-01 12:36:43 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 12:36:44 INFO  [extract] Reading source file raw/events.json
+2024-03-01 12:36:47 INFO  [extract] 3012 rows extracted
+2024-03-01 12:36:48 INFO  [validate] Checking schema...
+2024-03-01 12:36:49 WARN  [validate] 3 rows have null in column 'amount', defaulting to 0
+2024-03-01 12:36:50 INFO  [validate] Schema OK
+2024-03-01 12:36:51 INFO  [transform] Applying business rules to 3012 rows
+2024-03-01 12:36:54 INFO  [transform] 3012 rows transformed
+2024-03-01 12:36:55 INFO  [load] Writing to warehouse table fact_events
+2024-03-01 12:36:58 INFO  [load] 3012 rows loaded
+2024-03-01 12:36:59 INFO  [scheduler] Pipeline 'hourly_events' completed in 24s
+2024-03-01 13:28:00 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 13:28:01 INFO  [extract] Reading source file raw/events.json
+2024-03-01 13:28:02 INFO  [extract] 2408 rows extracted
+2024-03-01 13:28:03 INFO  [validate] Checking schema...
+2024-03-01 13:28:04 WARN  [validate] 7 rows have null in column 'amount', defaulting to 0
+2024-03-01 13:28:05 INFO  [validate] Schema OK
+2024-03-01 13:28:06 INFO  [transform] Applying business rules to 2408 rows
+2024-03-01 13:28:07 WARN  [transform] product_id 'P53' not found in catalog, row skipped
+2024-03-01 13:28:09 INFO  [transform] 2408 rows transformed
+2024-03-01 13:28:10 INFO  [load] Writing to warehouse table fact_events
+2024-03-01 13:28:14 INFO  [load] 2408 rows loaded
+2024-03-01 13:28:15 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 13:28:16 INFO  [scheduler] Pipeline 'hourly_events' completed in 7s
+2024-03-01 14:21:17 INFO  [scheduler] Pipeline 'weekly_inventory' triggered
+2024-03-01 14:21:18 INFO  [extract] Reading source file raw/inventory.csv
+2024-03-01 14:21:21 INFO  [extract] 4744 rows extracted
+2024-03-01 14:21:22 INFO  [validate] Checking schema...
+2024-03-01 14:21:23 INFO  [validate] Schema OK
+2024-03-01 14:21:24 INFO  [transform] Applying business rules to 4744 rows
+2024-03-01 14:21:26 INFO  [transform] 4744 rows transformed
+2024-03-01 14:21:27 INFO  [load] Writing to warehouse table fact_inventory
+2024-03-01 14:21:28 INFO  [load] 4744 rows loaded
+2024-03-01 14:21:29 INFO  [scheduler] Pipeline 'weekly_inventory' completed in 20s
+2024-03-01 14:56:30 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-01 14:56:31 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-01 14:56:32 INFO  [extract] 582 rows extracted
+2024-03-01 14:56:33 INFO  [validate] Checking schema...
+2024-03-01 14:56:34 INFO  [validate] Schema OK
+2024-03-01 14:56:35 INFO  [transform] Applying business rules to 582 rows
+2024-03-01 14:56:38 INFO  [transform] 582 rows transformed
+2024-03-01 14:56:39 INFO  [load] Writing to warehouse table feature_store
+2024-03-01 14:56:43 INFO  [load] 582 rows loaded
+2024-03-01 14:56:44 INFO  [scheduler] Pipeline 'ml_features' completed in 27s
+2024-03-01 15:43:45 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-01 15:43:46 INFO  [extract] Reading source file raw/product.csv
+2024-03-01 15:43:50 INFO  [extract] 234 rows extracted
+2024-03-01 15:43:51 INFO  [validate] Checking schema...
+2024-03-01 15:43:52 INFO  [validate] Schema OK
+2024-03-01 15:43:53 INFO  [transform] Applying business rules to 234 rows
+2024-03-01 15:43:54 INFO  [transform] 234 rows transformed
+2024-03-01 15:43:55 INFO  [load] Writing to warehouse table dim_product
+2024-03-01 15:43:58 INFO  [load] 234 rows loaded
+2024-03-01 15:43:59 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 15:44:00 INFO  [scheduler] Pipeline 'daily_product' completed in 18s
+2024-03-01 16:14:01 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 16:14:02 INFO  [extract] Reading source file raw/events.json
+2024-03-01 16:14:03 INFO  [extract] 4117 rows extracted
+2024-03-01 16:14:04 INFO  [validate] Checking schema...
+2024-03-01 16:14:05 WARN  [validate] 7 rows have null in column 'amount', defaulting to 0
+2024-03-01 16:14:06 INFO  [validate] Schema OK
+2024-03-01 16:14:07 INFO  [transform] Applying business rules to 4117 rows
+2024-03-01 16:14:09 INFO  [transform] 4117 rows transformed
+2024-03-01 16:14:10 INFO  [load] Writing to warehouse table fact_events
+2024-03-01 16:14:15 INFO  [load] 4117 rows loaded
+2024-03-01 16:14:16 INFO  [scheduler] Pipeline 'hourly_events' completed in 29s
+2024-03-01 16:41:17 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-01 16:41:18 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-01 16:41:20 INFO  [extract] 3166 rows extracted
+2024-03-01 16:41:21 INFO  [validate] Checking schema...
+2024-03-01 16:41:22 WARN  [validate] 3 rows have null in column 'amount', defaulting to 0
+2024-03-01 16:41:23 INFO  [validate] Schema OK
+2024-03-01 16:41:24 INFO  [transform] Applying business rules to 3166 rows
+2024-03-01 16:41:25 WARN  [transform] product_id 'P94' not found in catalog, row skipped
+2024-03-01 16:41:27 INFO  [transform] 3166 rows transformed
+2024-03-01 16:41:28 INFO  [load] Writing to warehouse table feature_store
+2024-03-01 16:41:33 INFO  [load] 3166 rows loaded
+2024-03-01 16:41:34 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 16:41:35 INFO  [scheduler] Pipeline 'ml_features' completed in 21s
+2024-03-01 16:46:36 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-01 16:46:37 INFO  [extract] Reading source file raw/customer.csv
+2024-03-01 16:46:40 INFO  [extract] 3482 rows extracted
+2024-03-01 16:46:41 INFO  [validate] Checking schema...
+2024-03-01 16:46:42 INFO  [validate] Schema OK
+2024-03-01 16:46:43 INFO  [transform] Applying business rules to 3482 rows
+2024-03-01 16:46:44 ERROR [load] Connection timeout writing to table dim_customer
+2024-03-01 16:46:54 ERROR [load] Retry 1/3 failed
+2024-03-01 16:47:04 ERROR [load] Retry 2/3 failed
+2024-03-01 16:47:14 ERROR [load] Retry 3/3 failed
+2024-03-01 16:47:14 ERROR [scheduler] Pipeline 'daily_customer' FAILED
+2024-03-01 17:24:15 INFO  [scheduler] Pipeline 'weekly_inventory' triggered
+2024-03-01 17:24:16 INFO  [extract] Reading source file raw/inventory.csv
+2024-03-01 17:24:20 INFO  [extract] 492 rows extracted
+2024-03-01 17:24:21 INFO  [validate] Checking schema...
+2024-03-01 17:24:22 INFO  [validate] Schema OK
+2024-03-01 17:24:23 INFO  [transform] Applying business rules to 492 rows
+2024-03-01 17:24:26 INFO  [transform] 492 rows transformed
+2024-03-01 17:24:27 INFO  [load] Writing to warehouse table fact_inventory
+2024-03-01 17:24:31 INFO  [load] 492 rows loaded
+2024-03-01 17:24:32 INFO  [scheduler] Pipeline 'weekly_inventory' completed in 28s
+2024-03-01 17:35:33 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 17:35:34 INFO  [extract] Reading source file raw/events.json
+2024-03-01 17:35:35 INFO  [extract] 3330 rows extracted
+2024-03-01 17:35:36 INFO  [validate] Checking schema...
+2024-03-01 17:35:37 WARN  [validate] 4 rows have null in column 'amount', defaulting to 0
+2024-03-01 17:35:38 INFO  [validate] Schema OK
+2024-03-01 17:35:39 INFO  [transform] Applying business rules to 3330 rows
+2024-03-01 17:35:40 ERROR [load] Connection timeout writing to table fact_events
+2024-03-01 17:35:50 ERROR [load] Retry 1/3 failed
+2024-03-01 17:36:00 ERROR [load] Retry 2/3 failed
+2024-03-01 17:36:10 ERROR [load] Retry 3/3 failed
+2024-03-01 17:36:10 ERROR [scheduler] Pipeline 'hourly_events' FAILED
+2024-03-01 18:19:11 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-01 18:19:12 INFO  [extract] Reading source file raw/sales.csv
+2024-03-01 18:19:13 INFO  [extract] 888 rows extracted
+2024-03-01 18:19:14 INFO  [validate] Checking schema...
+2024-03-01 18:19:15 INFO  [validate] Schema OK
+2024-03-01 18:19:16 INFO  [transform] Applying business rules to 888 rows
+2024-03-01 18:19:19 INFO  [transform] 888 rows transformed
+2024-03-01 18:19:20 INFO  [load] Writing to warehouse table fact_sales
+2024-03-01 18:19:21 INFO  [load] 888 rows loaded
+2024-03-01 18:19:22 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 18:19:23 INFO  [scheduler] Pipeline 'daily_sales' completed in 16s
+2024-03-01 19:03:24 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 19:03:25 INFO  [extract] Reading source file raw/events.json
+2024-03-01 19:03:28 INFO  [extract] 1266 rows extracted
+2024-03-01 19:03:29 INFO  [validate] Checking schema...
+2024-03-01 19:03:30 INFO  [validate] Schema OK
+2024-03-01 19:03:31 INFO  [transform] Applying business rules to 1266 rows
+2024-03-01 19:03:32 INFO  [transform] 1266 rows transformed
+2024-03-01 19:03:33 INFO  [load] Writing to warehouse table fact_events
+2024-03-01 19:03:37 INFO  [load] 1266 rows loaded
+2024-03-01 19:03:38 INFO  [scheduler] Pipeline 'hourly_events' completed in 32s
+2024-03-01 19:38:39 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 19:38:40 INFO  [extract] Reading source file raw/events.json
+2024-03-01 19:38:41 INFO  [extract] 2604 rows extracted
+2024-03-01 19:38:42 INFO  [validate] Checking schema...
+2024-03-01 19:38:43 WARN  [validate] 12 rows have null in column 'amount', defaulting to 0
+2024-03-01 19:38:44 INFO  [validate] Schema OK
+2024-03-01 19:38:45 INFO  [transform] Applying business rules to 2604 rows
+2024-03-01 19:38:48 INFO  [transform] 2604 rows transformed
+2024-03-01 19:38:49 INFO  [load] Writing to warehouse table fact_events
+2024-03-01 19:38:51 INFO  [load] 2604 rows loaded
+2024-03-01 19:38:52 INFO  [scheduler] Pipeline 'hourly_events' completed in 16s
+2024-03-01 20:16:53 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-01 20:16:54 INFO  [extract] Reading source file raw/product.csv
+2024-03-01 20:16:55 INFO  [extract] 1250 rows extracted
+2024-03-01 20:16:56 INFO  [validate] Checking schema...
+2024-03-01 20:16:57 INFO  [validate] Schema OK
+2024-03-01 20:16:58 INFO  [transform] Applying business rules to 1250 rows
+2024-03-01 20:16:59 INFO  [transform] 1250 rows transformed
+2024-03-01 20:17:00 INFO  [load] Writing to warehouse table dim_product
+2024-03-01 20:17:06 INFO  [load] 1250 rows loaded
+2024-03-01 20:17:07 INFO  [scheduler] Pipeline 'daily_product' completed in 36s
+2024-03-01 20:45:08 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-01 20:45:09 INFO  [extract] Reading source file raw/customer.csv
+2024-03-01 20:45:11 INFO  [extract] 2963 rows extracted
+2024-03-01 20:45:12 INFO  [validate] Checking schema...
+2024-03-01 20:45:13 INFO  [validate] Schema OK
+2024-03-01 20:45:14 INFO  [transform] Applying business rules to 2963 rows
+2024-03-01 20:45:15 INFO  [transform] 2963 rows transformed
+2024-03-01 20:45:16 INFO  [load] Writing to warehouse table dim_customer
+2024-03-01 20:45:21 INFO  [load] 2963 rows loaded
+2024-03-01 20:45:22 INFO  [scheduler] Pipeline 'daily_customer' completed in 15s
+2024-03-01 21:05:23 INFO  [scheduler] Pipeline 'hourly_events' triggered
+2024-03-01 21:05:24 INFO  [extract] Reading source file raw/events.json
+2024-03-01 21:05:26 INFO  [extract] 1907 rows extracted
+2024-03-01 21:05:27 INFO  [validate] Checking schema...
+2024-03-01 21:05:28 INFO  [validate] Schema OK
+2024-03-01 21:05:29 INFO  [transform] Applying business rules to 1907 rows
+2024-03-01 21:05:30 ERROR [load] Connection timeout writing to table fact_events
+2024-03-01 21:05:40 ERROR [load] Retry 1/3 failed
+2024-03-01 21:05:50 ERROR [load] Retry 2/3 failed
+2024-03-01 21:06:00 ERROR [load] Retry 3/3 failed
+2024-03-01 21:06:00 ERROR [scheduler] Pipeline 'hourly_events' FAILED
+2024-03-01 21:12:01 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-01 21:12:02 INFO  [extract] Reading source file raw/product.csv
+2024-03-01 21:12:05 INFO  [extract] 3918 rows extracted
+2024-03-01 21:12:06 INFO  [validate] Checking schema...
+2024-03-01 21:12:07 WARN  [validate] 10 rows have null in column 'amount', defaulting to 0
+2024-03-01 21:12:08 INFO  [validate] Schema OK
+2024-03-01 21:12:09 INFO  [transform] Applying business rules to 3918 rows
+2024-03-01 21:12:12 INFO  [transform] 3918 rows transformed
+2024-03-01 21:12:13 INFO  [load] Writing to warehouse table dim_product
+2024-03-01 21:12:16 INFO  [load] 3918 rows loaded
+2024-03-01 21:12:17 INFO  [scheduler] Pipeline 'daily_product' completed in 26s
+2024-03-01 21:22:18 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-01 21:22:19 INFO  [extract] Reading source file raw/customer.csv
+2024-03-01 21:22:21 INFO  [extract] 886 rows extracted
+2024-03-01 21:22:22 INFO  [validate] Checking schema...
+2024-03-01 21:22:23 INFO  [validate] Schema OK
+2024-03-01 21:22:24 INFO  [transform] Applying business rules to 886 rows
+2024-03-01 21:22:27 INFO  [transform] 886 rows transformed
+2024-03-01 21:22:28 INFO  [load] Writing to warehouse table dim_customer
+2024-03-01 21:22:29 INFO  [load] 886 rows loaded
+2024-03-01 21:22:30 INFO  [scheduler] Pipeline 'daily_customer' completed in 25s
+2024-03-01 22:08:31 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-01 22:08:32 INFO  [extract] Reading source file raw/sales.csv
+2024-03-01 22:08:36 INFO  [extract] 1032 rows extracted
+2024-03-01 22:08:37 INFO  [validate] Checking schema...
+2024-03-01 22:08:38 INFO  [validate] Schema OK
+2024-03-01 22:08:39 INFO  [transform] Applying business rules to 1032 rows
+2024-03-01 22:08:40 INFO  [transform] 1032 rows transformed
+2024-03-01 22:08:41 INFO  [load] Writing to warehouse table fact_sales
+2024-03-01 22:08:45 INFO  [load] 1032 rows loaded
+2024-03-01 22:08:46 INFO  [scheduler] Pipeline 'daily_sales' completed in 24s
+2024-03-01 22:18:47 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-01 22:18:48 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-01 22:18:52 INFO  [extract] 3292 rows extracted
+2024-03-01 22:18:53 INFO  [validate] Checking schema...
+2024-03-01 22:18:54 INFO  [validate] Schema OK
+2024-03-01 22:18:55 INFO  [transform] Applying business rules to 3292 rows
+2024-03-01 22:18:56 INFO  [transform] 3292 rows transformed
+2024-03-01 22:18:57 INFO  [load] Writing to warehouse table feature_store
+2024-03-01 22:18:59 INFO  [load] 3292 rows loaded
+2024-03-01 22:19:00 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 22:19:01 INFO  [scheduler] Pipeline 'ml_features' completed in 40s
+2024-03-01 22:53:02 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-01 22:53:03 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-01 22:53:07 INFO  [extract] 1247 rows extracted
+2024-03-01 22:53:08 INFO  [validate] Checking schema...
+2024-03-01 22:53:09 INFO  [validate] Schema OK
+2024-03-01 22:53:10 INFO  [transform] Applying business rules to 1247 rows
+2024-03-01 22:53:11 INFO  [transform] 1247 rows transformed
+2024-03-01 22:53:12 INFO  [load] Writing to warehouse table feature_store
+2024-03-01 22:53:13 INFO  [load] 1247 rows loaded
+2024-03-01 22:53:14 DEBUG [load] Partition p_20240301 committed, checksum ok
+2024-03-01 22:53:15 INFO  [scheduler] Pipeline 'ml_features' completed in 9s
+2024-03-02 06:00:01 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-02 06:00:02 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-02 06:00:06 INFO  [extract] 1190 rows extracted
+2024-03-02 06:00:07 INFO  [validate] Checking schema...
+2024-03-02 06:00:08 INFO  [validate] Schema OK
+2024-03-02 06:00:09 INFO  [transform] Applying business rules to 1190 rows
+2024-03-02 06:00:10 WARN  [transform] product_id 'P37' not found in catalog, row skipped
+2024-03-02 06:00:11 ERROR [load] Connection timeout writing to table feature_store
+2024-03-02 06:00:21 ERROR [load] Retry 1/3 failed
+2024-03-02 06:00:31 ERROR [load] Retry 2/3 failed
+2024-03-02 06:00:41 ERROR [load] Retry 3/3 failed
+2024-03-02 06:00:41 ERROR [scheduler] Pipeline 'ml_features' FAILED
+2024-03-02 06:18:42 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 06:18:43 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 06:18:45 INFO  [extract] 4155 rows extracted
+2024-03-02 06:18:46 INFO  [validate] Checking schema...
+2024-03-02 06:18:47 INFO  [validate] Schema OK
+2024-03-02 06:18:48 INFO  [transform] Applying business rules to 4155 rows
+2024-03-02 06:18:49 INFO  [transform] 4155 rows transformed
+2024-03-02 06:18:50 INFO  [load] Writing to warehouse table dim_product
+2024-03-02 06:18:51 INFO  [load] 4155 rows loaded
+2024-03-02 06:18:52 INFO  [scheduler] Pipeline 'daily_product' completed in 25s
+2024-03-02 06:52:53 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-02 06:52:54 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-02 06:52:58 INFO  [extract] 4828 rows extracted
+2024-03-02 06:52:59 INFO  [validate] Checking schema...
+2024-03-02 06:53:00 INFO  [validate] Schema OK
+2024-03-02 06:53:01 INFO  [transform] Applying business rules to 4828 rows
+2024-03-02 06:53:02 ERROR [load] Connection timeout writing to table feature_store
+2024-03-02 06:53:12 ERROR [load] Retry 1/3 failed
+2024-03-02 06:53:22 ERROR [load] Retry 2/3 failed
+2024-03-02 06:53:32 ERROR [load] Retry 3/3 failed
+2024-03-02 06:53:32 ERROR [scheduler] Pipeline 'ml_features' FAILED
+2024-03-02 07:07:33 INFO  [scheduler] Pipeline 'weekly_inventory' triggered
+2024-03-02 07:07:34 INFO  [extract] Reading source file raw/inventory.csv
+2024-03-02 07:07:35 INFO  [extract] 4232 rows extracted
+2024-03-02 07:07:36 INFO  [validate] Checking schema...
+2024-03-02 07:07:37 INFO  [validate] Schema OK
+2024-03-02 07:07:38 INFO  [transform] Applying business rules to 4232 rows
+2024-03-02 07:07:39 INFO  [transform] 4232 rows transformed
+2024-03-02 07:07:40 INFO  [load] Writing to warehouse table fact_inventory
+2024-03-02 07:07:42 INFO  [load] 4232 rows loaded
+2024-03-02 07:07:43 DEBUG [load] Partition p_20240302 committed, checksum ok
+2024-03-02 07:07:44 INFO  [scheduler] Pipeline 'weekly_inventory' completed in 10s
+2024-03-02 07:47:45 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-02 07:47:46 INFO  [extract] Reading source file raw/sales.csv
+2024-03-02 07:47:50 INFO  [extract] 2720 rows extracted
+2024-03-02 07:47:51 INFO  [validate] Checking schema...
+2024-03-02 07:47:52 INFO  [validate] Schema OK
+2024-03-02 07:47:53 INFO  [transform] Applying business rules to 2720 rows
+2024-03-02 07:47:54 WARN  [transform] product_id 'P81' not found in catalog, row skipped
+2024-03-02 07:47:55 ERROR [load] Connection timeout writing to table fact_sales
+2024-03-02 07:48:05 ERROR [load] Retry 1/3 failed
+2024-03-02 07:48:15 ERROR [load] Retry 2/3 failed
+2024-03-02 07:48:25 ERROR [load] Retry 3/3 failed
+2024-03-02 07:48:25 ERROR [scheduler] Pipeline 'daily_sales' FAILED
+2024-03-02 08:05:26 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 08:05:27 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 08:05:28 INFO  [extract] 395 rows extracted
+2024-03-02 08:05:29 INFO  [validate] Checking schema...
+2024-03-02 08:05:30 INFO  [validate] Schema OK
+2024-03-02 08:05:31 INFO  [transform] Applying business rules to 395 rows
+2024-03-02 08:05:32 INFO  [transform] 395 rows transformed
+2024-03-02 08:05:33 INFO  [load] Writing to warehouse table dim_product
+2024-03-02 08:05:37 INFO  [load] 395 rows loaded
+2024-03-02 08:05:38 INFO  [scheduler] Pipeline 'daily_product' completed in 35s
+2024-03-02 08:48:39 INFO  [scheduler] Pipeline 'weekly_inventory' triggered
+2024-03-02 08:48:40 INFO  [extract] Reading source file raw/inventory.csv
+2024-03-02 08:48:43 INFO  [extract] 1683 rows extracted
+2024-03-02 08:48:44 INFO  [validate] Checking schema...
+2024-03-02 08:48:45 INFO  [validate] Schema OK
+2024-03-02 08:48:46 INFO  [transform] Applying business rules to 1683 rows
+2024-03-02 08:48:47 INFO  [transform] 1683 rows transformed
+2024-03-02 08:48:48 INFO  [load] Writing to warehouse table fact_inventory
+2024-03-02 08:48:54 INFO  [load] 1683 rows loaded
+2024-03-02 08:48:55 INFO  [scheduler] Pipeline 'weekly_inventory' completed in 19s
+2024-03-02 09:28:56 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-02 09:28:57 INFO  [extract] Reading source file raw/customer.csv
+2024-03-02 09:28:59 INFO  [extract] 3716 rows extracted
+2024-03-02 09:29:00 INFO  [validate] Checking schema...
+2024-03-02 09:29:01 INFO  [validate] Schema OK
+2024-03-02 09:29:02 INFO  [transform] Applying business rules to 3716 rows
+2024-03-02 09:29:05 INFO  [transform] 3716 rows transformed
+2024-03-02 09:29:06 INFO  [load] Writing to warehouse table dim_customer
+2024-03-02 09:29:08 INFO  [load] 3716 rows loaded
+2024-03-02 09:29:09 INFO  [scheduler] Pipeline 'daily_customer' completed in 16s
+2024-03-02 10:16:10 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 10:16:11 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 10:16:13 INFO  [extract] 1052 rows extracted
+2024-03-02 10:16:14 INFO  [validate] Checking schema...
+2024-03-02 10:16:15 INFO  [validate] Schema OK
+2024-03-02 10:16:16 INFO  [transform] Applying business rules to 1052 rows
+2024-03-02 10:16:18 INFO  [transform] 1052 rows transformed
+2024-03-02 10:16:19 INFO  [load] Writing to warehouse table dim_product
+2024-03-02 10:16:21 INFO  [load] 1052 rows loaded
+2024-03-02 10:16:22 INFO  [scheduler] Pipeline 'daily_product' completed in 17s
+2024-03-02 11:08:23 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-02 11:08:24 INFO  [extract] Reading source file raw/sales.csv
+2024-03-02 11:08:28 INFO  [extract] 3312 rows extracted
+2024-03-02 11:08:29 INFO  [validate] Checking schema...
+2024-03-02 11:08:30 WARN  [validate] 11 rows have null in column 'amount', defaulting to 0
+2024-03-02 11:08:31 INFO  [validate] Schema OK
+2024-03-02 11:08:32 INFO  [transform] Applying business rules to 3312 rows
+2024-03-02 11:08:34 INFO  [transform] 3312 rows transformed
+2024-03-02 11:08:35 INFO  [load] Writing to warehouse table fact_sales
+2024-03-02 11:08:40 INFO  [load] 3312 rows loaded
+2024-03-02 11:08:41 INFO  [scheduler] Pipeline 'daily_sales' completed in 29s
+2024-03-02 11:25:42 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 11:25:43 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 11:25:44 INFO  [extract] 2659 rows extracted
+2024-03-02 11:25:45 INFO  [validate] Checking schema...
+2024-03-02 11:25:46 INFO  [validate] Schema OK
+2024-03-02 11:25:47 INFO  [transform] Applying business rules to 2659 rows
+2024-03-02 11:25:48 WARN  [transform] product_id 'P80' not found in catalog, row skipped
+2024-03-02 11:25:51 INFO  [transform] 2659 rows transformed
+2024-03-02 11:25:52 INFO  [load] Writing to warehouse table dim_product
+2024-03-02 11:25:53 INFO  [load] 2659 rows loaded
+2024-03-02 11:25:54 INFO  [scheduler] Pipeline 'daily_product' completed in 36s
+2024-03-02 12:09:55 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 12:09:56 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 12:09:57 INFO  [extract] 4246 rows extracted
+2024-03-02 12:09:58 INFO  [validate] Checking schema...
+2024-03-02 12:09:59 WARN  [validate] 4 rows have null in column 'amount', defaulting to 0
+2024-03-02 12:10:00 INFO  [validate] Schema OK
+2024-03-02 12:10:01 INFO  [transform] Applying business rules to 4246 rows
+2024-03-02 12:10:02 ERROR [load] Connection timeout writing to table dim_product
+2024-03-02 12:10:12 ERROR [load] Retry 1/3 failed
+2024-03-02 12:10:22 ERROR [load] Retry 2/3 failed
+2024-03-02 12:10:32 ERROR [load] Retry 3/3 failed
+2024-03-02 12:10:32 ERROR [scheduler] Pipeline 'daily_product' FAILED
+2024-03-02 12:31:33 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 12:31:34 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 12:31:36 INFO  [extract] 374 rows extracted
+2024-03-02 12:31:37 INFO  [validate] Checking schema...
+2024-03-02 12:31:38 WARN  [validate] 3 rows have null in column 'amount', defaulting to 0
+2024-03-02 12:31:39 INFO  [validate] Schema OK
+2024-03-02 12:31:40 INFO  [transform] Applying business rules to 374 rows
+2024-03-02 12:31:43 INFO  [transform] 374 rows transformed
+2024-03-02 12:31:44 INFO  [load] Writing to warehouse table dim_product
+2024-03-02 12:31:47 INFO  [load] 374 rows loaded
+2024-03-02 12:31:48 INFO  [scheduler] Pipeline 'daily_product' completed in 37s
+2024-03-02 13:08:49 INFO  [scheduler] Pipeline 'weekly_inventory' triggered
+2024-03-02 13:08:50 INFO  [extract] Reading source file raw/inventory.csv
+2024-03-02 13:08:53 INFO  [extract] 4101 rows extracted
+2024-03-02 13:08:54 INFO  [validate] Checking schema...
+2024-03-02 13:08:55 WARN  [validate] 1 rows have null in column 'amount', defaulting to 0
+2024-03-02 13:08:56 INFO  [validate] Schema OK
+2024-03-02 13:08:57 INFO  [transform] Applying business rules to 4101 rows
+2024-03-02 13:08:58 INFO  [transform] 4101 rows transformed
+2024-03-02 13:08:59 INFO  [load] Writing to warehouse table fact_inventory
+2024-03-02 13:09:02 INFO  [load] 4101 rows loaded
+2024-03-02 13:09:03 INFO  [scheduler] Pipeline 'weekly_inventory' completed in 8s
+2024-03-02 13:30:04 INFO  [scheduler] Pipeline 'daily_sales' triggered
+2024-03-02 13:30:05 INFO  [extract] Reading source file raw/sales.csv
+2024-03-02 13:30:06 INFO  [extract] 1871 rows extracted
+2024-03-02 13:30:07 INFO  [validate] Checking schema...
+2024-03-02 13:30:08 WARN  [validate] 2 rows have null in column 'amount', defaulting to 0
+2024-03-02 13:30:09 INFO  [validate] Schema OK
+2024-03-02 13:30:10 INFO  [transform] Applying business rules to 1871 rows
+2024-03-02 13:30:13 INFO  [transform] 1871 rows transformed
+2024-03-02 13:30:14 INFO  [load] Writing to warehouse table fact_sales
+2024-03-02 13:30:18 INFO  [load] 1871 rows loaded
+2024-03-02 13:30:19 INFO  [scheduler] Pipeline 'daily_sales' completed in 20s
+2024-03-02 14:14:20 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-02 14:14:21 INFO  [extract] Reading source file raw/customer.csv
+2024-03-02 14:14:23 INFO  [extract] 403 rows extracted
+2024-03-02 14:14:24 INFO  [validate] Checking schema...
+2024-03-02 14:14:25 INFO  [validate] Schema OK
+2024-03-02 14:14:26 INFO  [transform] Applying business rules to 403 rows
+2024-03-02 14:14:27 INFO  [transform] 403 rows transformed
+2024-03-02 14:14:28 INFO  [load] Writing to warehouse table dim_customer
+2024-03-02 14:14:30 INFO  [load] 403 rows loaded
+2024-03-02 14:14:31 INFO  [scheduler] Pipeline 'daily_customer' completed in 22s
+2024-03-02 14:52:32 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-02 14:52:33 INFO  [extract] Reading source file raw/customer.csv
+2024-03-02 14:52:37 INFO  [extract] 2425 rows extracted
+2024-03-02 14:52:38 INFO  [validate] Checking schema...
+2024-03-02 14:52:39 INFO  [validate] Schema OK
+2024-03-02 14:52:40 INFO  [transform] Applying business rules to 2425 rows
+2024-03-02 14:52:41 WARN  [transform] product_id 'P54' not found in catalog, row skipped
+2024-03-02 14:52:43 INFO  [transform] 2425 rows transformed
+2024-03-02 14:52:44 INFO  [load] Writing to warehouse table dim_customer
+2024-03-02 14:52:45 INFO  [load] 2425 rows loaded
+2024-03-02 14:52:46 DEBUG [load] Partition p_20240302 committed, checksum ok
+2024-03-02 14:52:47 INFO  [scheduler] Pipeline 'daily_customer' completed in 35s
+2024-03-02 15:32:48 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-02 15:32:49 INFO  [extract] Reading source file raw/customer.csv
+2024-03-02 15:32:53 INFO  [extract] 4262 rows extracted
+2024-03-02 15:32:54 INFO  [validate] Checking schema...
+2024-03-02 15:32:55 WARN  [validate] 8 rows have null in column 'amount', defaulting to 0
+2024-03-02 15:32:56 INFO  [validate] Schema OK
+2024-03-02 15:32:57 INFO  [transform] Applying business rules to 4262 rows
+2024-03-02 15:32:58 WARN  [transform] product_id 'P93' not found in catalog, row skipped
+2024-03-02 15:33:00 INFO  [transform] 4262 rows transformed
+2024-03-02 15:33:01 INFO  [load] Writing to warehouse table dim_customer
+2024-03-02 15:33:06 INFO  [load] 4262 rows loaded
+2024-03-02 15:33:07 INFO  [scheduler] Pipeline 'daily_customer' completed in 28s
+2024-03-02 16:10:08 INFO  [scheduler] Pipeline 'daily_product' triggered
+2024-03-02 16:10:09 INFO  [extract] Reading source file raw/product.csv
+2024-03-02 16:10:11 INFO  [extract] 1812 rows extracted
+2024-03-02 16:10:12 INFO  [validate] Checking schema...
+2024-03-02 16:10:13 INFO  [validate] Schema OK
+2024-03-02 16:10:14 INFO  [transform] Applying business rules to 1812 rows
+2024-03-02 16:10:17 INFO  [transform] 1812 rows transformed
+2024-03-02 16:10:18 INFO  [load] Writing to warehouse table dim_product
+2024-03-02 16:10:20 INFO  [load] 1812 rows loaded
+2024-03-02 16:10:21 INFO  [scheduler] Pipeline 'daily_product' completed in 25s
+2024-03-02 16:18:22 INFO  [scheduler] Pipeline 'daily_customer' triggered
+2024-03-02 16:18:23 INFO  [extract] Reading source file raw/customer.csv
+2024-03-02 16:18:24 INFO  [extract] 166 rows extracted
+2024-03-02 16:18:25 INFO  [validate] Checking schema...
+2024-03-02 16:18:26 INFO  [validate] Schema OK
+2024-03-02 16:18:27 INFO  [transform] Applying business rules to 166 rows
+2024-03-02 16:18:28 INFO  [transform] 166 rows transformed
+2024-03-02 16:18:29 INFO  [load] Writing to warehouse table dim_customer
+2024-03-02 16:18:30 INFO  [load] 166 rows loaded
+2024-03-02 16:18:31 INFO  [scheduler] Pipeline 'daily_customer' completed in 27s
+2024-03-02 16:55:32 INFO  [scheduler] Pipeline 'ml_features' triggered
+2024-03-02 16:55:33 INFO  [extract] Reading source file warehouse/fact_sales
+2024-03-02 16:55:35 INFO  [extract] 2359 rows extracted
+2024-03-02 16:55:36 INFO  [validate] Checking schema...
+2024-03-02 16:55:37 INFO  [validate] Schema OK
+2024-03-02 16:55:38 INFO  [transform] Applying business rules to 2359 rows
+2024-03-02 16:55:39 WARN  [transform] product_id 'P33' not found in catalog, row skipped
+2024-03-02 16:55:41 INFO  [transform] 2359 rows transformed
+2024-03-02 16:55:42 INFO  [load] Writing to warehouse table feature_store
+2024-03-02 16:55:43 INFO  [load] 2359 rows loaded
+2024-03-02 16:55:44 INFO  [scheduler] Pipeline 'ml_features' completed in 24s
