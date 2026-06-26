@@ -746,7 +746,7 @@ for value in incoming:
     print(f"  {value:12} -> {status}")
 ```
 
-### Comprehensions (list / dict / set)
+### `05_comprehensions.py`
 แนวคิดเดียวกับ list/dict/set ด้านบน แต่เขียนสั้นลงในบรรทัดเดียว — สร้าง collection จากการวนลูป
 ```python
 # list comprehension — apply 7% VAT to a price list
